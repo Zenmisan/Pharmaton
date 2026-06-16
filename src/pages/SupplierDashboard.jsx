@@ -38,8 +38,8 @@ export function SupplierDashboard({ setPage }) {
   ]
 
   return (
-    <div className="max-w-[1200px] mx-auto px-6 py-8">
-      <div className="grain-overlay bg-grad-purple rounded-[20px] px-8 py-7 mb-6 text-white">
+    <div className="max-w-300 mx-auto px-6 py-8">
+      <div className="grain-overlay bg-grad-purple rounded-xl px-8 py-7 mb-6 text-white">
         <div className="flex justify-between items-center flex-wrap gap-4">
           <div>
             <p className="text-white/75 text-[13px] flex items-center gap-1.5">
@@ -58,7 +58,7 @@ export function SupplierDashboard({ setPage }) {
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3.5 mb-6">
         {stats.map(({ v, l, Icon, color }) => (
-          <Card key={l} className="text-center !p-5">
+          <Card key={l} className="text-center p-5!">
             <Icon size={26} className="mx-auto" style={{ color }}/>
             <div className="font-black my-1" style={{ fontSize: v.startsWith('₦')?20:30, color }}>{v}</div>
             <div className="text-muted text-[13px]">{l}</div>
@@ -74,7 +74,7 @@ export function SupplierDashboard({ setPage }) {
           </div>
           <div className="flex flex-col gap-2.5">
             {reqs.map(r => (
-              <div key={r.id} className={cn('rounded-[14px] p-4 border-[1.5px] transition-opacity duration-200', !!r.urgent&&r.status==="pending"?'border-danger':'border-border', r.status!=="pending"?'opacity-60':'')}>
+              <div key={r.id} className={cn('rounded-lg p-4 border-[1.5px] transition-opacity duration-200', !!r.urgent&&r.status==="pending"?'border-danger':'border-border', r.status!=="pending"?'opacity-60':'')}>
                 <div className="flex justify-between mb-1.5">
                   <span className="font-bold text-sm">{r.from_name}</span>
                   {!!r.urgent && r.status==="pending" && <span className="bg-danger text-white text-[10px] font-extrabold rounded-md px-2 py-0.5">URGENT</span>}
