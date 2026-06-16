@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* ── Brand palette ──────────────────────────────────────────── */
+  --color-blue-brand:   #1B3FC4;
+  --color-blue-deep:    #0F2A8E;
+  --color-blue-light:   #E8EDFB;
+  --color-green-brand:  #15803D;
+  --color-green-mid:    #16A34A;
+  --color-green-light:  #DCFCE7;
+  --color-teal-brand:   #0D9488;
+  --color-purple-brand: #7C3AED;
+
+  /* ── Semantic tokens ────────────────────────────────────────── */
+  --color-background: #FAF8F3;
+  --color-surface:    #FFFFFF;
+  --color-border:     #E7E2D6;
+  --color-text:       #14130F;
+  --color-muted:      #6B6657;
+  --color-subtle:     #9B9686;
+  --color-danger:     #DC2626;
+  --color-warning:    #D97706;
+
+  /* ── Radius ─────────────────────────────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  --font-sans:    'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+
+  /* ── Keyframes ──────────────────────────────────────────────── */
+  --animate-fade-up:    fade-up   0.35s cubic-bezier(0.16,1,0.3,1) both;
+  --animate-fade-in:    fade-in   0.25s ease-out both;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+  --animate-float:      float 6s ease-in-out infinite;
+  --animate-shimmer:    shimmer 1.6s linear infinite;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translate(0,0); }
+    50%      { transform: translate(0,-14px); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+}
+
+/* ── Base layer ─────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html  { scroll-behavior: smooth; }
+  body  {
+    font-family: var(--font-sans);
+    background: var(--color-background);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.01em; }
+
+  ::-webkit-scrollbar       { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #D8D2C2; border-radius: 3px; }
+
+  button, input, textarea, select { font-family: inherit; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ── Utility classes used in JSX ────────────────────────────── */
+@layer utilities {
+  .fade-in    { animation: fade-in  0.3s ease both; }
+  .fade-up    { animation: fade-up  0.35s cubic-bezier(0.16,1,0.3,1) both; }
+  .spin       { animation: spin     1s linear infinite; display: inline-block; }
+  .pulse-soft { animation: pulse-soft 1.5s ease infinite; }
+  .float-soft { animation: float 6s ease-in-out infinite; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Gradient backgrounds */
+  .bg-grad-main   { background: linear-gradient(135deg, #1B3FC4 0%, #15803D 100%); }
+  .bg-grad-green  { background: linear-gradient(135deg, #15803D 0%, #22C55E 100%); }
+  .bg-grad-teal   { background: linear-gradient(135deg, #0D9488 0%, #1B3FC4 100%); }
+  .bg-grad-purple { background: linear-gradient(135deg, #7C3AED 0%, #1B3FC4 100%); }
+
+  /* Grain texture overlay — subtle SVG noise, layered on dark/gradient sections */
+  .grain-overlay {
+    position: relative;
+  }
+  .grain-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Shimmer skeleton */
+  .skeleton {
+    background: linear-gradient(90deg, #EFEAE0 25%, #F7F3EA 37%, #EFEAE0 63%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+}
