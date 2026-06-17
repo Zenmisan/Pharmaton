@@ -1,13 +1,19 @@
 import { useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { ChevronLeft } from 'lucide-react'
 import { useAuth } from '@/lib/auth.jsx'
 import { Logo } from '@/components/Logo'
 import { Card, Btn } from '@/components/ui'
 
 /* ─── AUTH SCREEN (LOGIN / SIGNUP) ───────────────────────────── */
-export function AuthScreen({ initialRole, onDone }) {
+export function AuthScreen() {
   const { login, signup } = useAuth()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const initialRole = searchParams.get("role") || "patient"
+  
   const [mode, setMode] = useState("signup")
-  const [role, setRole] = useState(initialRole || "patient")
+  const [role, setRole] = useState(initialRole)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
@@ -28,7 +34,8 @@ export function AuthScreen({ initialRole, onDone }) {
       } else {
         await signup({ email, password, name, role, orgName, location, licenseNumber })
       }
-      onDone()
+      // Redirection handled by AuthProvider/App state mostly, but we can push to dashboard
+      navigate('/dashboard')
     } catch (e2) {
       setErr(e2.message)
     } finally {
@@ -37,8 +44,14 @@ export function AuthScreen({ initialRole, onDone }) {
   }
 
   return (
-    <div className="max-w-[440px] mx-auto px-6 py-16">
-      <div className="flex justify-center mb-6"><Logo size={44}/></div>
+    <div className="max-w-[440px] mx-auto px-6 py-16 relative">
+      <div className="absolute top-8 left-0">
+        <Btn variant="ghost" size="sm" onClick={() => navigate('/choose')} className="gap-1.5">
+          <ChevronLeft size={16} /> Back
+        </Btn>
+      </div>
+
+      <div className="flex justify-center mb-6 mt-4"><Logo size={44}/></div>
       <h1 className="text-2xl font-extrabold text-center mb-1">{mode === "login" ? "Welcome back" : "Create your account"}</h1>
       <p className="text-muted text-sm text-center mb-7">{mode === "login" ? "Sign in to PharmaConnect AI" : "Join PharmaConnect AI as a " + roleLabels[role]}</p>
 
@@ -46,7 +59,7 @@ export function AuthScreen({ initialRole, onDone }) {
         <form onSubmit={submit} className="flex flex-col gap-3">
           {mode === "signup" && (
             <select value={role} onChange={e => setRole(e.target.value)}
-              className="border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors">
+              className="border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors bg-white">
               {Object.entries(roleLabels).map(([id, label]) => <option key={id} value={id}>{label}</option>)}
             </select>
           )}
@@ -75,7 +88,7 @@ export function AuthScreen({ initialRole, onDone }) {
 
       <p className="text-center text-muted text-[13px] mt-5">
         {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
-        <button onClick={() => setMode(mode === "login" ? "signup" : "login")} className="text-blue-brand font-bold bg-transparent border-0 cursor-pointer">
+        <button onClick={() => setMode(mode === "login" ? "signup" : "login")} className="text-blue-brand font-bold bg-transparent border-0 cursor-pointer p-0">
           {mode === "login" ? "Sign up" : "Sign in"}
         </button>
       </p>

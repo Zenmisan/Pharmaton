@@ -1,4 +1,4 @@
-const BASE = '/api'
+const BASE = import.meta.env.VITE_API_URL || '/api'
 
 function getToken() {
   return localStorage.getItem('pc_token')
@@ -26,7 +26,6 @@ export async function apiFetch(path, { method = 'GET', body } = {}) {
 
 export const api = {
   signup: (payload) => apiFetch('/auth/signup', { method: 'POST', body: payload }),
-  login: (payload) => apiFetch('/auth/login', { method: 'POST', body: payload }),
   me: () => apiFetch('/auth/me'),
 
   search: (q) => apiFetch(`/search?q=${encodeURIComponent(q)}`),
@@ -40,6 +39,7 @@ export const api = {
   updateOrder: (id, payload) => apiFetch(`/orders/${id}`, { method: 'PATCH', body: payload }),
 
   supplierRequests: () => apiFetch('/supplier-requests'),
+  createSupplierRequest: (payload) => apiFetch('/supplier-requests', { method: 'POST', body: payload }),
   updateSupplierRequest: (id, status) => apiFetch(`/supplier-requests/${id}`, { method: 'PATCH', body: { status } }),
 
   alerts: () => apiFetch('/alerts'),

@@ -52,7 +52,7 @@ export function SourcingPage() {
             <p className="text-muted text-[13px] mb-3.5 flex items-center gap-1"><Star size={11}/> {s.rating}</p>
             <div className="flex gap-2">
               <Btn full variant="secondary" size="sm" onClick={() => viewStock(s)}>View Stock</Btn>
-              <Btn full size="sm" onClick={() => api.createOrder({ supplierId: s.owner_user_id, medicine: "Supply request", qty: "1" }).then(() => alert("Request sent to " + s.name))}>Request Supply</Btn>
+              <Btn full size="sm" onClick={() => api.createSupplierRequest({ supplierId: s.owner_user_id, medicine: "Supply Request", qty: "Bulk", urgent: false }).then(() => alert("Request sent to " + s.name))}>Request Supply</Btn>
             </div>
           </Card>
         ))}

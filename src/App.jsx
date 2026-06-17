@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { useAuth } from '@/lib/auth.jsx'
 import { Nav } from '@/components/Nav'
@@ -20,11 +21,19 @@ import { OrdersPage } from '@/pages/OrdersPage'
 import { SupplierDashboard } from '@/pages/SupplierDashboard'
 import { StockPage } from '@/pages/StockPage'
 
+/* ─── PROTECTED ROUTE ────────────────────────────────────────── */
+function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-muted text-sm">Loading...</div>
+  if (!user) return <Navigate to="/" replace />
+  return children
+}
+
 /* ─── APP (ROOT) ─────────────────────────────────────────────── */
 function App() {
   const { user, loading, signOut: authSignOut } = useAuth()
-  const [page, setPage] = useState("landing")
-  const [pendingRole, setPendingRole] = useState(null)
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
   const pageContentRef = useRef(null)
 
   useEffect(() => {
@@ -34,86 +43,62 @@ function App() {
       { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out', clearProps: 'opacity,transform' }
     )
     return () => tween.kill()
-  }, [page, user])
-
-  function chooseRole(role) {
-    if (role === null) {
-      setPage("choose")
-    } else {
-      setPendingRole(role)
-      setPage("auth")
-    }
-  }
+  }, [pathname])
 
   function signOut() {
     authSignOut()
-    setPage("landing")
+    navigate('/')
   }
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted text-sm">Loading...</div>
 
-  if (!user) {
-    if (page === "auth") return (
-      <div ref={pageContentRef}>
-        <AuthScreen initialRole={pendingRole} onDone={() => setPage(pendingRole === "patient" ? "home" : "dashboard")} />
-      </div>
-    )
-    if (page === "choose") return (
-      <div ref={pageContentRef}>
-        <ChooseRole onSelect={r => { setPendingRole(r); setPage("auth") }} />
-      </div>
-    )
-    return (
-      <div ref={pageContentRef}>
-        <Landing onChoose={chooseRole} />
-      </div>
-    )
-  }
-
-  const userType = user.role
-
-  function renderPage() {
-    if (page === "alerts")  return <AlertsPage />
-    if (page === "profile") return <ProfilePage userType={userType} onSwitchRole={signOut} onSignOut={signOut} />
-
-    switch (userType) {
-      case "patient":
-        if (page === "home")   return <PatientHome setPage={setPage} />
-        if (page === "search") return <SearchPage />
-        if (page === "map")    return <MapPage />
-        return <PatientHome setPage={setPage} />
-
-      case "pharmacist":
-        if (page === "dashboard") return <PharmacistDashboard setPage={setPage} />
-        if (page === "inventory") return <InventoryPage />
-        if (page === "sourcing")  return <SourcingPage />
-        if (page === "insights")  return <InsightsPage userType={userType} />
-        return <PharmacistDashboard setPage={setPage} />
-
-      case "hospital":
-        if (page === "dashboard") return <HospitalDashboard setPage={setPage} />
-        if (page === "emergency") return <EmergencyPage />
-        if (page === "orders")    return <OrdersPage />
-        if (page === "insights")  return <InsightsPage userType={userType} />
-        return <HospitalDashboard setPage={setPage} />
-
-      case "supplier":
-        if (page === "dashboard") return <SupplierDashboard setPage={setPage} />
-        if (page === "stock")     return <StockPage />
-        if (page === "requests")  return <SupplierDashboard setPage={setPage} />
-        if (page === "analytics") return <InsightsPage userType={userType} />
-        return <SupplierDashboard setPage={setPage} />
-
-      default:
-        return <PatientHome setPage={setPage} />
-    }
-  }
+  const userType = user?.role
 
   return (
     <div>
-      <Nav page={page} setPage={setPage} userType={userType} onSignOut={signOut} />
+      {user && <Nav userType={userType} onSignOut={signOut} />}
       <div ref={pageContentRef}>
-        {renderPage()}
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Landing />} />
+          <Route path="/choose" element={user ? <Navigate to="/dashboard" replace /> : <ChooseRole />} />
+          <Route path="/auth" element={user ? <Navigate to="/dashboard" replace /> : <AuthScreen />} />
+
+          {/* Role-Based Dashboards */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              {userType === "patient" && <PatientHome setPage={p => navigate(`/${p}`)} />}
+              {userType === "pharmacist" && <PharmacistDashboard setPage={p => navigate(`/${p}`)} />}
+              {userType === "hospital" && <HospitalDashboard setPage={p => navigate(`/${p}`)} />}
+              {userType === "supplier" && <SupplierDashboard setPage={p => navigate(`/${p}`)} />}
+            </ProtectedRoute>
+          } />
+
+          {/* Shared Protected Routes */}
+          <Route path="/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage userType={userType} onSwitchRole={signOut} onSignOut={signOut} /></ProtectedRoute>} />
+          <Route path="/insights" element={<ProtectedRoute><InsightsPage userType={userType} /></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute><InsightsPage userType={userType} /></ProtectedRoute>} />
+
+          {/* Patient Routes */}
+          <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+          <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
+
+          {/* Pharmacist Routes */}
+          <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
+          <Route path="/sourcing" element={<ProtectedRoute><SourcingPage /></ProtectedRoute>} />
+
+          {/* Hospital Routes */}
+          <Route path="/emergency" element={<ProtectedRoute><EmergencyPage /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+
+          {/* Supplier Routes */}
+          <Route path="/stock" element={<ProtectedRoute><StockPage /></ProtectedRoute>} />
+          <Route path="/requests" element={<ProtectedRoute><SupplierDashboard setPage={p => navigate(`/${p}`)} /></ProtectedRoute>} />
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
     </div>
   )

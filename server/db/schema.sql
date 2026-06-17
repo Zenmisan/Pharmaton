@@ -2,8 +2,9 @@
 
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid TEXT UNIQUE,
   email TEXT UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL,
+  password_hash TEXT,
   name TEXT NOT NULL,
   role TEXT NOT NULL CHECK(role IN ('patient','pharmacist','hospital','supplier')),
   org_name TEXT,
@@ -51,6 +52,7 @@ CREATE TABLE IF NOT EXISTS orders (
 CREATE TABLE IF NOT EXISTS supplier_requests (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   supplier_id INTEGER NOT NULL REFERENCES users(id),
+  buyer_id INTEGER REFERENCES users(id),
   from_name TEXT NOT NULL,
   medicine TEXT NOT NULL,
   qty TEXT NOT NULL,

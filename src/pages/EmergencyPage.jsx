@@ -60,7 +60,7 @@ export function EmergencyPage() {
               <a className="flex-1" href={`tel:${s.phone}`}>
                 <Btn full variant="secondary" size="sm" className="gap-1"><Phone size={12}/> Call</Btn>
               </a>
-              <Btn full size="sm" onClick={() => api.createOrder({ supplierId: s.owner_user_id, medicine: eq || "Emergency request", qty: "1" }).then(() => alert("Request sent to " + s.name))}>Request</Btn>
+              <Btn full size="sm" onClick={() => api.createSupplierRequest({ supplierId: s.owner_user_id, medicine: eq || "Emergency Request", qty: "Emergency", urgent: true }).then(() => alert("Emergency request sent to " + s.name))}>Request</Btn>
             </div>
           </Card>
         ))}

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
@@ -14,7 +15,8 @@ import { Logo } from '@/components/Logo'
 import { Card, Btn } from '@/components/ui'
 
 /* ─── LANDING ────────────────────────────────────────────────── */
-export function Landing({ onChoose }) {
+export function Landing() {
+  const navigate = useNavigate()
   const heroRef  = useRef(null)
   const badgeRef = useRef(null)
   const logoRef  = useRef(null)
@@ -36,7 +38,8 @@ export function Landing({ onChoose }) {
 
       if (cardsRef.current) {
         const cards = cardsRef.current.querySelectorAll('.role-card')
-        gsap.from(cards, { opacity: 0, y: 40, duration: 0.5, stagger: 0.1, ease: 'power3.out', delay: 0.5 })
+        // Removed opacity: 0 to fix visibility issues
+        gsap.from(cards, { y: 40, duration: 0.5, stagger: 0.1, ease: 'power3.out', delay: 0.5 })
       }
 
       if (featuresRef.current) {
@@ -74,6 +77,11 @@ export function Landing({ onChoose }) {
     { Icon: Shield,        title:"Verified Network",           desc:"Every pharmacy and supplier is PCN licensed, CAC registered, and NAFDAC approved before appearing on the platform." },
     { Icon: AlertOctagon,  title:"Safety & Recall Alerts",     desc:"Instant notifications on counterfeits, NAFDAC recalls, packaging updates, and supply-chain safety notices." },
   ]
+
+  function onChoose(role) {
+    if (!role) navigate('/choose')
+    else navigate(`/auth?role=${role}`)
+  }
 
   return (
     <div ref={heroRef}>

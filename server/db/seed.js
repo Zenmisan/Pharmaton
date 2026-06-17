@@ -1,13 +1,9 @@
-import bcrypt from 'bcryptjs'
-
 export function seed(db) {
-  const hash = bcrypt.hashSync('password123', 10)
-
-  const insertUser = db.prepare(`INSERT INTO users (email,password_hash,name,role,org_name,location,license_number) VALUES (?,?,?,?,?,?,?)`)
-  const patient    = insertUser.run('amara@example.com', hash, 'Amara Okonkwo', 'patient', null, 'Surulere, Lagos', null)
-  const pharmacist = insertUser.run('grace@example.com', hash, 'Grace Adeyemi', 'pharmacist', 'Grace Pharmacy', 'Surulere, Lagos', 'PCN/2019/00231')
-  const hospital    = insertUser.run('emeka@example.com', hash, 'Dr. Emeka Nwosu', 'hospital', 'General Hospital Lagos', 'Lagos Island', null)
-  const supplier    = insertUser.run('medisupply@example.com', hash, 'MediSupply Wholesalers', 'supplier', 'MediSupply Wholesalers', 'Ikeja, Lagos', 'CAC/BN/2018/004521')
+  const insertUser = db.prepare(`INSERT INTO users (uid,email,name,role,org_name,location,license_number) VALUES (?,?,?,?,?,?,?)`)
+  const patient    = insertUser.run('demo-uid-amara', 'amara@example.com', 'Amara Okonkwo', 'patient', null, 'Surulere, Lagos', null)
+  const pharmacist = insertUser.run('demo-uid-grace', 'grace@example.com', 'Grace Adeyemi', 'pharmacist', 'Grace Pharmacy', 'Surulere, Lagos', 'PCN/2019/00231')
+  const hospital    = insertUser.run('demo-uid-emeka', 'emeka@example.com', 'Dr. Emeka Nwosu', 'hospital', 'General Hospital Lagos', 'Lagos Island', null)
+  const supplier    = insertUser.run('demo-uid-medisupply', 'medisupply@example.com', 'MediSupply Wholesalers', 'supplier', 'MediSupply Wholesalers', 'Ikeja, Lagos', 'CAC/BN/2018/004521')
 
   const insertPharmacy = db.prepare(`INSERT INTO pharmacies (owner_user_id,name,type,location,lat,lng,phone,nafdac_verified,rating) VALUES (?,?,?,?,?,?,?,?,?)`)
   const pharm1 = insertPharmacy.run(pharmacist.lastInsertRowid, 'Grace Pharmacy', 'pharmacy', 'Surulere, Lagos', 6.4926, 3.3552, '+2348012345001', 1, 4.8)
