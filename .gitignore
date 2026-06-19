@@ -12,8 +12,10 @@ dist
 dist-ssr
 *.local
 
-# Backend
-# server/.env
+# Env files
+.env.production
+.env.local
+server/.env
 # server/db/*.db
 # server/db/*.db-journal
 # server/db/*.db-wal
