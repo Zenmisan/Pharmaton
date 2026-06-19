@@ -10,7 +10,7 @@ export function ChooseRole() {
   const navigate = useNavigate()
   const types = [
     { id:"patient",    Icon: () => <PersonIcon sx={{ fontSize: 26 }} />,        label:"Patient",              desc:"Search medicines, compare branded & generic options, find nearby pharmacies", color:'#1B3FC4' },
-    { id:"pharmacist", Icon: () => <LocalPharmacyIcon sx={{ fontSize: 26 }} />, label:"Community Pharmacist", desc:"Manage inventory, respond to patient requests, get AI demand insights",        color:'#16A34A' },
+    { id:"pharmacist", Icon: () => <LocalPharmacyIcon sx={{ fontSize: 26 }} />, label:"Pharmacist", desc:"Manage inventory, respond to patient requests, get AI demand insights",        color:'#16A34A' },
   ]
   return (
     <div className="min-h-[90vh] flex flex-col items-center justify-center px-6 py-12 relative">

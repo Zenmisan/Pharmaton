@@ -36,7 +36,7 @@ export function PharmacistDashboard({ setPage }) {
         <div className="flex justify-between items-center flex-wrap gap-4">
           <div>
             <p className="text-white/75 text-[13px] flex items-center gap-1.5">
-              <LocalPharmacyIcon sx={{ fontSize: 14 }}/> Community Pharmacist · Verified Partner
+              <LocalPharmacyIcon sx={{ fontSize: 14 }}/> Pharmacist · Verified Partner
               <CheckCircle2 size={13} className="text-[#86EFAC]"/>
             </p>
             <h1 className="font-display text-[28px] font-black my-1">{user?.org_name || user?.name}</h1>

@@ -22,7 +22,7 @@ export function ProfilePage({ userType, onSwitchRole, onSignOut }) {
     supplier:   () => <LocalShippingIcon sx={{ fontSize: 40 }}/>,
   }
   const grads = { patient: G.main, pharmacist: G.green, hospital: G.teal, supplier: G.purple }
-  const roleLabels = { patient: "Patient", pharmacist: "Community Pharmacist", hospital: "Hospital Pharmacist", supplier: "Supplier / Distributor" }
+  const roleLabels = { patient: "Patient", pharmacist: "Pharmacist", hospital: "Hospital Pharmacist", supplier: "Supplier / Distributor" }
   const Icon = icons[userType] || icons.patient
 
   const menuItems = [

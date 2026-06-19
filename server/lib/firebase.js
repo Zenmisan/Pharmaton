@@ -3,11 +3,13 @@ import { getAuth } from 'firebase-admin/auth'
 
 if (getApps().length === 0) {
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    // Production: service account JSON stored as env var on Railway
     try {
-      // Railway converts \n escape sequences to real newlines in env vars — re-escape them
-      const raw = process.env.FIREBASE_SERVICE_ACCOUNT.replace(/\n/g, '\\n')
-      const serviceAccount = JSON.parse(raw)
+      const raw = process.env.FIREBASE_SERVICE_ACCOUNT
+      // Support both base64-encoded and raw JSON (base64 avoids Railway newline mangling)
+      const normalize = str => str.startsWith('{')
+        ? str.replace(/\n/g, '\\n')          // raw JSON with actual newlines
+        : Buffer.from(str, 'base64').toString('utf8').replace(/\n/g, '\\n') // base64-encoded
+      const serviceAccount = JSON.parse(normalize(raw.trim()))
       initializeApp({ credential: cert(serviceAccount) })
     } catch (e) {
       console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT:', e.message)

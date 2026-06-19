@@ -62,7 +62,7 @@ export function Landing() {
 
   const roles = [
     { id:"patient",    Icon: () => <PersonIcon sx={{ fontSize: 30 }} />, label:"Patient",               desc:"Search medicines, compare branded & generic options, find nearby pharmacies with real prices", color:'#1B3FC4', grad:G.main  },
-    { id:"pharmacist", Icon: () => <LocalPharmacyIcon sx={{ fontSize: 30 }} />, label:"Community Pharmacist", desc:"Manage inventory, respond to patient requests, access AI demand insights",                  color:'#16A34A', grad:G.green },
+    { id:"pharmacist", Icon: () => <LocalPharmacyIcon sx={{ fontSize: 30 }} />, label:"Pharmacist", desc:"Manage inventory, respond to patient requests, access AI demand insights",                  color:'#16A34A', grad:G.green },
   ]
 
   const features = [

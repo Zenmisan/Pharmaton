@@ -31,7 +31,7 @@ export function SourcingPage() {
             className="flex-1 min-w-[250px] border-[1.5px] border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-brand transition-colors"/>
           <Btn onClick={async () => {
             setL(true)
-            const res = await callAI("You are PharmaConnect AI sourcing agent for Nigerian community pharmacists. Provide specific sourcing advice: name 2-3 verified supplier types in Nigeria, suggest alternatives if shortage exists, mention typical turnaround times, and note any NAFDAC considerations. Be practical and specific. 4 sentences max.", q)
+            const res = await callAI("You are PharmaConnect AI sourcing agent for Nigerian pharmacists. Provide specific sourcing advice: name 2-3 verified supplier types in Nigeria, suggest alternatives if shortage exists, mention typical turnaround times, and note any NAFDAC considerations. Be practical and specific. 4 sentences max.", q)
             setR(res); setL(false)
           }} className="gap-1.5">
             <Search size={15}/> {l ? "Finding..." : "Find Sources"}

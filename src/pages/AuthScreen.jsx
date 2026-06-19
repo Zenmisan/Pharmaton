@@ -42,7 +42,7 @@ export function AuthScreen() {
   const [googleLocation, setGoogleLocation] = useState("")
   const [googleLicense, setGoogleLicense] = useState("")
 
-  const roleLabels = { patient: "Patient", pharmacist: "Community Pharmacist" }
+  const roleLabels = { patient: "Patient", pharmacist: "Pharmacist" }
 
   async function submit(e) {
     e.preventDefault()
@@ -131,7 +131,7 @@ export function AuthScreen() {
             <select value={googleRole} onChange={e => setGoogleRole(e.target.value)}
               className="border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors bg-white">
               <option value="patient">Patient</option>
-              <option value="pharmacist">Community Pharmacist</option>
+              <option value="pharmacist">Pharmacist</option>
             </select>
             {googleRole === "pharmacist" && (
               <>
@@ -191,7 +191,7 @@ export function AuthScreen() {
             <select value={role} onChange={e => setRole(e.target.value)}
               className="border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors bg-white">
               <option value="patient">Patient</option>
-              <option value="pharmacist">Community Pharmacist</option>
+              <option value="pharmacist">Pharmacist</option>
             </select>
           )}
           {mode === "signup" && (
