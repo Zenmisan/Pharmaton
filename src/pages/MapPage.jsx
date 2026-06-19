@@ -1,19 +1,29 @@
 import { useState, useEffect } from 'react'
-import { MapPin, Star, Phone, Navigation } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { MapPin, Star, Phone, Navigation, Clock, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { haversineKm, fmtKm, LAGOS_DEFAULT } from '@/lib/utils'
 import { api } from '@/lib/api'
 import { Card, Btn, Badge } from '@/components/ui'
 
 /* ─── MAP PAGE ───────────────────────────────────────────────── */
 export function MapPage() {
+  const navigate = useNavigate()
   const [sel, setSel] = useState(null)
   const [filter, setFilter] = useState("All")
   const [pharmacies, setPharmacies] = useState([])
   const [loading, setLoading] = useState(true)
+  const [userPos, setUserPos] = useState(LAGOS_DEFAULT)
+
+  useEffect(() => {
+    navigator.geolocation?.getCurrentPosition(
+      pos => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => {}
+    )
+  }, [])
 
   useEffect(() => {
     api.pharmacies('pharmacy').then(({ pharmacies }) => {
-      // lay out on the mock map canvas using normalized lat/lng -> x/y
       const lats = pharmacies.map(p => p.lat), lngs = pharmacies.map(p => p.lng)
       const minLat = Math.min(...lats), maxLat = Math.max(...lats)
       const minLng = Math.min(...lngs), maxLng = Math.max(...lngs)
@@ -21,10 +31,11 @@ export function MapPage() {
         ...p,
         x: 60 + ((p.lng - minLng) / ((maxLng - minLng) || 1)) * 420,
         y: 380 - ((p.lat - minLat) / ((maxLat - minLat) || 1)) * 320,
-      }))
+        distKm: (p.lat && p.lng) ? haversineKm(userPos.lat, userPos.lng, p.lat, p.lng) : 999,
+      })).sort((a, b) => a.distKm - b.distKm)
       setPharmacies(withXY)
     }).finally(() => setLoading(false))
-  }, [])
+  }, [userPos])
 
   const dc = { "In Stock":"#16A34A", "Low Stock":"#D97706", "Out of Stock":"#DC2626" }
   const filtered = filter === "All" ? pharmacies : pharmacies.filter(p => p.status === filter)
@@ -33,7 +44,11 @@ export function MapPage() {
   return (
     <div className="max-w-[1200px] mx-auto px-6 py-8">
       <h1 className="text-2xl font-extrabold mb-1">Nearby Pharmacies</h1>
-      <p className="text-muted text-sm mb-6">Showing pharmacies within 10km of Surulere, Lagos</p>
+      <p className="text-muted text-sm mb-6">
+        {pharmacies.length > 0
+          ? `${pharmacies.length} pharmacies found · sorted by distance`
+          : 'Finding pharmacies near you...'}
+      </p>
       <div className="flex gap-2 mb-5 flex-wrap">
         {["All","In Stock","Low Stock","Out of Stock"].map(f => (
           <button key={f} onClick={() => setFilter(f)}
@@ -81,17 +96,29 @@ export function MapPage() {
           </div>
         </div>
 
-        {/* List */}
-        <div className="flex flex-col gap-2.5">
+        {/* Sidebar list */}
+        <div className="flex flex-col gap-2.5 overflow-y-auto max-h-[500px]">
           {loading && <p className="text-muted text-sm">Loading pharmacies...</p>}
+
+          {/* Selected pharmacy expanded card */}
           {selP && (
             <Card className="fade-in border-2 border-blue-brand mb-1">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-base font-extrabold">{selP.name}</h3>
                 <Badge status={selP.status}/>
               </div>
-              <p className="text-muted text-xs mb-0.5 flex items-center gap-1"><Star size={11}/> {selP.rating}{selP.nafdac_verified ? ' · NAFDAC Verified' : ''}</p>
-              <p className="text-muted text-xs mb-2.5 flex items-center gap-1"><MapPin size={11}/> {selP.location}</p>
+              <p className="text-muted text-xs mb-0.5 flex items-center gap-1.5">
+                <Star size={11}/> {selP.rating}
+                {selP.review_count > 0 && <span>({selP.review_count})</span>}
+                {selP.nafdac_verified ? ' · NAFDAC Verified' : ''}
+              </p>
+              <p className="text-muted text-xs mb-0.5 flex items-center gap-1">
+                <MapPin size={11}/> {selP.location}
+                {selP.distKm < 999 && <span className="text-blue-brand font-semibold ml-1">· {fmtKm(selP.distKm)}</span>}
+              </p>
+              {selP.hours && (
+                <p className="text-muted text-xs mb-2.5 flex items-center gap-1"><Clock size={11}/> {selP.hours}</p>
+              )}
               <div className="flex gap-2">
                 <a className="flex-1" href={`https://www.google.com/maps/search/?api=1&query=${selP.lat},${selP.lng}`} target="_blank" rel="noreferrer">
                   <Btn full variant="secondary" size="sm" className="gap-1"><Navigation size={12}/> Directions</Btn>
@@ -100,16 +127,30 @@ export function MapPage() {
                   <Btn full size="sm" className="gap-1"><Phone size={12}/> Call</Btn>
                 </a>
               </div>
+              <button onClick={() => navigate(`/pharmacy/${selP.id}`)}
+                className="w-full mt-2 text-blue-brand text-xs font-semibold text-center bg-transparent border-0 cursor-pointer hover:underline flex items-center justify-center gap-1">
+                View full profile <ChevronRight size={13}/>
+              </button>
             </Card>
           )}
+
+          {/* All pharmacy list items */}
           {filtered.map(p => (
             <Card key={p.id} onClick={() => setSel(sel===p.id?null:p.id)}
-              className={cn('!p-3.5 transition-all duration-150', sel===p.id ? 'border-[1.5px] border-blue-brand' : 'border-[1.5px] border-border')}>
+              className={cn('!p-3.5 transition-all duration-150 cursor-pointer', sel===p.id ? 'border-[1.5px] border-blue-brand' : 'border-[1.5px] border-border')}>
               <div className="flex justify-between items-center mb-1">
                 <span className="font-bold text-sm">{p.name}</span>
                 <Badge status={p.status}/>
               </div>
-              <p className="text-muted text-xs flex items-center gap-1"><MapPin size={10}/> {p.location} · <Star size={10}/> {p.rating}</p>
+              <p className="text-muted text-xs flex items-center gap-1.5">
+                <MapPin size={10}/> {p.location}
+                {p.distKm < 999 && <span className="text-blue-brand font-semibold">· {fmtKm(p.distKm)}</span>}
+              </p>
+              <p className="text-muted text-xs flex items-center gap-1.5 mt-0.5">
+                <Star size={10}/> {p.rating}
+                {p.review_count > 0 && <span>({p.review_count})</span>}
+                {p.hours && <><Clock size={10} className="ml-1"/> {p.hours}</>}
+              </p>
             </Card>
           ))}
         </div>

@@ -1,8 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy'
-import MedicalServicesIcon from '@mui/icons-material/MedicalServices'
-import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import PersonIcon from '@mui/icons-material/Person'
 import { Logo } from '@/components/Logo'
 import { Card, Btn } from '@/components/ui'
@@ -11,10 +9,8 @@ import { Card, Btn } from '@/components/ui'
 export function ChooseRole() {
   const navigate = useNavigate()
   const types = [
-    { id:"patient",    Icon: () => <PersonIcon sx={{ fontSize: 26 }} />,          label:"Patient",               desc:"Find medicines, compare prices, locate pharmacies",              color:'#1B3FC4' },
-    { id:"pharmacist", Icon: () => <LocalPharmacyIcon sx={{ fontSize: 26 }} />,   label:"Community Pharmacist",  desc:"Manage inventory, source medicines, get AI demand insights",      color:'#16A34A' },
-    { id:"hospital",   Icon: () => <MedicalServicesIcon sx={{ fontSize: 26 }} />, label:"Hospital Pharmacist",   desc:"Emergency sourcing, bulk orders, verified supplier access",       color:'#0D9488' },
-    { id:"supplier",   Icon: () => <LocalShippingIcon sx={{ fontSize: 26 }} />,   label:"Supplier / Distributor",desc:"List medicines, receive pharmacy requests, market analytics",     color:'#7C3AED' },
+    { id:"patient",    Icon: () => <PersonIcon sx={{ fontSize: 26 }} />,        label:"Patient",              desc:"Search medicines, compare branded & generic options, find nearby pharmacies", color:'#1B3FC4' },
+    { id:"pharmacist", Icon: () => <LocalPharmacyIcon sx={{ fontSize: 26 }} />, label:"Community Pharmacist", desc:"Manage inventory, respond to patient requests, get AI demand insights",        color:'#16A34A' },
   ]
   return (
     <div className="min-h-[90vh] flex flex-col items-center justify-center px-6 py-12 relative">

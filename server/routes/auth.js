@@ -8,23 +8,49 @@ export async function requireAuth(req, res, next) {
   const header = req.headers.authorization || ''
   const token = header.startsWith('Bearer ') ? header.slice(7) : null
   if (!token) return res.status(401).json({ error: 'Missing token' })
-  try {
-    const decodedToken = await auth.verifyIdToken(token)
-    
-    // Look up local ID
-    const user = db.prepare('SELECT id, role FROM users WHERE uid = ?').get(decodedToken.uid)
-    if (!user) return res.status(401).json({ error: 'User not synced with local database' })
-    
-    req.user = { 
-      ...decodedToken,
-      id: user.id,
-      role: user.role
+
+  // Dev-only: hardcoded demo tokens bypass Firebase entirely
+  if (process.env.NODE_ENV !== 'production') {
+    const demoMap = {
+      'demo-patient':     'demo-uid-amara',
+      'demo-pharmacist':  'demo-uid-grace',
     }
-    next()
-  } catch (e) {
-    console.error('Firebase token verification failed', e)
-    return res.status(401).json({ error: 'Invalid or expired token' })
+    if (demoMap[token]) {
+      const user = db.prepare('SELECT id, role FROM users WHERE uid = ?').get(demoMap[token])
+      if (user) {
+        req.user = { id: user.id, role: user.role, uid: demoMap[token], email: 'demo' }
+        return next()
+      }
+    }
   }
+
+  let uid
+  try {
+    const decoded = await auth.verifyIdToken(token)
+    uid = decoded.uid
+  } catch (verifyErr) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('Firebase token verification failed', verifyErr.message)
+      return res.status(401).json({ error: 'Invalid or expired token' })
+    }
+    // Dev fallback: decode JWT payload without signature verification
+    // Allows local dev without GOOGLE_APPLICATION_CREDENTIALS
+    try {
+      const raw = Buffer.from(token.split('.')[1], 'base64url').toString()
+      const payload = JSON.parse(raw)
+      uid = payload.sub || payload.user_id
+      if (!uid) throw new Error('No uid in token')
+      console.warn('[DEV] Firebase token unverified (no service account). Set GOOGLE_APPLICATION_CREDENTIALS for production.')
+    } catch {
+      return res.status(401).json({ error: 'Invalid or expired token' })
+    }
+  }
+
+  const user = db.prepare('SELECT id, role FROM users WHERE uid = ?').get(uid)
+  if (!user) return res.status(401).json({ error: 'User not synced with local database' })
+
+  req.user = { id: user.id, role: user.role, uid, email: '' }
+  next()
 }
 
 function publicUser(u) {

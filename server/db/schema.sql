@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS pharmacies (
   lng REAL,
   phone TEXT,
   nafdac_verified INTEGER NOT NULL DEFAULT 0,
-  rating REAL DEFAULT 4.5
+  rating REAL DEFAULT 4.5,
+  hours TEXT,
+  review_count INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS inventory (

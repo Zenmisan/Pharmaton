@@ -7,8 +7,6 @@ import {
   Globe, MapPin, DollarSign, Link2, Shield, AlertOctagon,
 } from 'lucide-react'
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy'
-import MedicalServicesIcon from '@mui/icons-material/MedicalServices'
-import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import PersonIcon from '@mui/icons-material/Person'
 import { G } from '@/lib/gradients'
 import { Logo } from '@/components/Logo'
@@ -63,10 +61,8 @@ export function Landing() {
   }, [])
 
   const roles = [
-    { id:"patient",    Icon: () => <PersonIcon sx={{ fontSize: 30 }} />, label:"Patient",               desc:"Search medicines, find nearby pharmacies, get safety alerts",        color:'#1B3FC4', grad:G.main   },
-    { id:"pharmacist", Icon: () => <LocalPharmacyIcon sx={{ fontSize: 30 }} />, label:"Community Pharmacist", desc:"Manage inventory, source medicines, access AI insights",                color:'#16A34A', grad:G.green  },
-    { id:"hospital",   Icon: () => <MedicalServicesIcon sx={{ fontSize: 30 }} />, label:"Hospital Pharmacist",  desc:"Emergency sourcing, bulk orders, verified supplier access",             color:'#0D9488', grad:G.teal   },
-    { id:"supplier",   Icon: () => <LocalShippingIcon sx={{ fontSize: 30 }} />, label:"Supplier / Distributor",desc:"List stock, receive requests, monitor demand trends",                   color:'#7C3AED', grad:G.purple },
+    { id:"patient",    Icon: () => <PersonIcon sx={{ fontSize: 30 }} />, label:"Patient",               desc:"Search medicines, compare branded & generic options, find nearby pharmacies with real prices", color:'#1B3FC4', grad:G.main  },
+    { id:"pharmacist", Icon: () => <LocalPharmacyIcon sx={{ fontSize: 30 }} />, label:"Community Pharmacist", desc:"Manage inventory, respond to patient requests, access AI demand insights",                  color:'#16A34A', grad:G.green },
   ]
 
   const features = [

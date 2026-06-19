@@ -1,6 +1,6 @@
 const BASE = import.meta.env.VITE_API_URL || '/api'
 
-function getToken() {
+export function getToken() {
   return localStorage.getItem('pc_token')
 }
 

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import {
-  CheckCircle2, AlertTriangle, X, Package, MapPin, Bot, BarChart3,
+  CheckCircle2, AlertTriangle, X, Package, MapPin, Bot, BarChart3, ExternalLink,
 } from 'lucide-react'
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy'
+import { useNavigate } from 'react-router-dom'
 import { api } from '@/lib/api'
 import { callAI } from '@/lib/ai'
 import { useAuth } from '@/lib/auth.jsx'
@@ -11,9 +12,10 @@ import { Card, Btn, Badge } from '@/components/ui'
 /* ─── PHARMACIST DASHBOARD ───────────────────────────────────── */
 export function PharmacistDashboard({ setPage }) {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [iq, setIq] = useState(""); const [ir, setIr] = useState(""); const [il, setIl] = useState(false)
   const [inv, setInv] = useState([])
-  const [invStats, setInvStats] = useState({ total: 0, inStock: 0, lowStock: 0, outOfStock: 0 })
+  const [invStats, setInvStats] = useState({ total: 0, inStock: 0, lowStock: 0, outOfStock: 0, pharmacy_id: null })
   const [pendingOrders, setPendingOrders] = useState(0)
 
   useEffect(() => {
@@ -40,9 +42,15 @@ export function PharmacistDashboard({ setPage }) {
             <h1 className="font-display text-[28px] font-black my-1">{user?.org_name || user?.name}</h1>
             <p className="text-white/80 text-sm flex items-center gap-1"><MapPin size={13}/> {user?.location || "Location not set"}{user?.license_number ? ` · ${user.license_number}` : ""}</p>
           </div>
-          <div className="flex gap-2.5">
+          <div className="flex gap-2.5 flex-wrap">
             <Btn size="sm" style={{ background:'rgba(255,255,255,0.2)', border:'1px solid rgba(255,255,255,0.4)', color:'#fff' }} onClick={() => setPage("inventory")}>Manage Inventory</Btn>
             <Btn size="sm" style={{ background:'rgba(255,255,255,0.2)', border:'1px solid rgba(255,255,255,0.4)', color:'#fff' }} onClick={() => setPage("inventory")}>Update Stock</Btn>
+            {invStats.pharmacy_id && (
+              <Btn size="sm" style={{ background:'rgba(255,255,255,0.2)', border:'1px solid rgba(255,255,255,0.4)', color:'#fff' }}
+                onClick={() => navigate(`/pharmacy/${invStats.pharmacy_id}`)}>
+                <ExternalLink size={13}/> View My Listing
+              </Btn>
+            )}
           </div>
         </div>
       </div>

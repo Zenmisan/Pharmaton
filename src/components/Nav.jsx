@@ -19,11 +19,7 @@ export function Nav({ userType, onSignOut }) {
 
   const links = userType === "patient"
     ? [["/dashboard","Home"],["/search","Search Medicine"],["/map","Find Pharmacies"],["/alerts","Safety Alerts"]]
-    : userType === "pharmacist"
-    ? [["/dashboard","Dashboard"],["/inventory","Inventory"],["/sourcing","Sourcing"],["/insights","AI Insights"]]
-    : userType === "hospital"
-    ? [["/dashboard","Dashboard"],["/emergency","Emergency"],["/orders","Orders"],["/insights","AI Insights"]]
-    : [["/dashboard","Dashboard"],["/stock","My Stock"],["/requests","Requests"],["/analytics","Analytics"]]
+    : [["/dashboard","Dashboard"],["/inventory","Inventory"],["/insights","AI Insights"]]
 
   return (
     <nav className={cn(

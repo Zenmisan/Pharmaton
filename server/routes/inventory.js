@@ -12,6 +12,7 @@ router.get('/', (req, res) => {
   if (!pharmacy) return res.json({ items: [], stats: { total: 0, inStock: 0, lowStock: 0, outOfStock: 0 } })
   const items = db.prepare('SELECT * FROM inventory WHERE pharmacy_id = ?').all(pharmacy.id)
   const stats = {
+    pharmacy_id: pharmacy.id,
     total: items.length,
     inStock: items.filter(i => i.status === 'In Stock').length,
     lowStock: items.filter(i => i.status === 'Low Stock').length,
