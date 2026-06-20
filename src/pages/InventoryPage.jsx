@@ -47,17 +47,23 @@ export function InventoryPage() {
         <Btn gradient={G.green} onClick={() => setShowAdd(v => !v)}>+ Add Medicine</Btn>
       </div>
       {showAdd && (
-        <Card className="mb-5 !p-5">
-          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-3 items-end">
-            <input value={newItem.name} onChange={e => setNewItem({ ...newItem, name: e.target.value })} placeholder="Medicine name"
-              className="border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none"/>
-            <input value={newItem.stock} onChange={e => setNewItem({ ...newItem, stock: e.target.value })} placeholder="Stock" type="number"
-              className="border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none"/>
-            <input value={newItem.price} onChange={e => setNewItem({ ...newItem, price: e.target.value })} placeholder="Price"
-              className="border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none"/>
-            <input value={newItem.expiry} onChange={e => setNewItem({ ...newItem, expiry: e.target.value })} placeholder="Expiry"
-              className="border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none"/>
-            <Btn onClick={addMedicine}>Save</Btn>
+        <Card className="mb-5 !p-4 sm:!p-5">
+          <p className="text-xs font-bold text-muted mb-3">ADD NEW MEDICINE</p>
+          <div className="flex flex-col gap-3">
+            <input value={newItem.name} onChange={e => setNewItem({ ...newItem, name: e.target.value })} placeholder="Medicine name (e.g. Paracetamol 500mg)"
+              className="w-full border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-green-brand transition-colors"/>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <input value={newItem.stock} onChange={e => setNewItem({ ...newItem, stock: e.target.value })} placeholder="Stock qty" type="number"
+                className="border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-green-brand transition-colors"/>
+              <input value={newItem.price} onChange={e => setNewItem({ ...newItem, price: e.target.value })} placeholder="Price (e.g. ₦500)"
+                className="border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-green-brand transition-colors"/>
+              <input value={newItem.expiry} onChange={e => setNewItem({ ...newItem, expiry: e.target.value })} placeholder="Expiry (e.g. Dec 2026)"
+                className="border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-green-brand transition-colors col-span-2 sm:col-span-1"/>
+            </div>
+            <div className="flex gap-2">
+              <Btn gradient={G.green} onClick={addMedicine} className="flex-1">Save Medicine</Btn>
+              <Btn variant="ghost" onClick={() => setShowAdd(false)}>Cancel</Btn>
+            </div>
           </div>
         </Card>
       )}
@@ -78,7 +84,8 @@ export function InventoryPage() {
         ))}
       </div>
       <Card className="!p-0 overflow-hidden">
-        <table className="w-full border-collapse">
+        <div className="overflow-x-auto">
+        <table className="w-full border-collapse min-w-[500px]">
           <thead>
             <tr className="bg-background">
               {["Medicine Name","Stock","Status","Price","Expiry","Action"].map(h => (
@@ -99,6 +106,7 @@ export function InventoryPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   )

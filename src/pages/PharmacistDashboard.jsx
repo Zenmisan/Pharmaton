@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
-  CheckCircle2, AlertTriangle, X, Package, MapPin, Bot, BarChart3, ExternalLink,
+  CheckCircle2, AlertTriangle, X, Package, MapPin, MessageSquare, BarChart3, ExternalLink,
 } from 'lucide-react'
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy'
 import { useNavigate } from 'react-router-dom'
@@ -65,13 +65,14 @@ export function PharmacistDashboard({ setPage }) {
         ))}
       </div>
 
-      <div className="grid gap-5" style={{ gridTemplateColumns: '1fr 380px' }}>
+      <div className="grid gap-5 grid-cols-1 lg:grid-cols-[1fr_360px]">
         <Card>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-extrabold">Inventory Overview</h2>
             <Btn variant="ghost" size="sm" onClick={() => setPage("inventory")}>View all →</Btn>
           </div>
-          <table className="w-full border-collapse">
+          <div className="overflow-x-auto">
+          <table className="w-full border-collapse min-w-[360px]">
             <thead>
               <tr className="border-b-2 border-border">
                 {["Medicine","Stock","Status","Expiry"].map(h => <th key={h} className="text-left px-2.5 py-2 text-muted text-xs font-bold">{h}</th>)}
@@ -88,21 +89,26 @@ export function PharmacistDashboard({ setPage }) {
               ))}
             </tbody>
           </table>
+          </div>
         </Card>
 
         <div className="flex flex-col gap-3.5">
           <Card style={{ background: `linear-gradient(135deg,rgba(232,237,251,1),rgba(220,252,231,1))`, border: '1px solid rgba(27,63,196,0.12)' }}>
-            <h3 className="text-[15px] font-extrabold mb-3 flex items-center gap-2"><Bot size={16}/> AI Demand Insight</h3>
+            <h3 className="text-[15px] font-extrabold mb-3 flex items-center gap-2"><MessageSquare size={16}/> Demand Insight</h3>
             <textarea value={iq} onChange={e => setIq(e.target.value)} placeholder="Ask about demand trends, shortages, pricing..."
               className="w-full border border-border rounded-xl px-3 py-2.5 text-[13px] outline-none resize-none h-20 font-[inherit] box-border mb-2.5"/>
             <Btn full onClick={async () => {
               setIl(true)
-              const r = await callAI("You are PharmaConnect AI for Nigerian community pharmacies. Give 2-3 actionable sentences about pharmaceutical demand, market trends, or sourcing advice specific to Nigeria.", iq)
+              const r = await callAI("You are a market intelligence assistant for Nigerian community pharmacies. Give 2-3 actionable sentences about pharmaceutical demand, market trends, or sourcing advice specific to Nigeria.", iq)
               setIr(r); setIl(false)
             }}>
-              {il ? "Analyzing..." : "Ask AI"}
+              {il ? "Searching..." : "Ask"}
             </Btn>
-            {ir && <p className="fade-in text-text text-[13px] leading-[1.7] mt-3 px-3 py-2.5 bg-white rounded-xl">{ir}</p>}
+            {ir && (
+              <p className={`fade-in text-[13px] leading-[1.7] mt-3 px-3 py-2.5 rounded-xl ${ir.startsWith('AI unavailable') ? 'bg-yellow-50 text-yellow-800' : 'bg-white text-text'}`}>
+                {ir.startsWith('AI unavailable') ? 'Service temporarily unavailable. Please try again shortly.' : ir}
+              </p>
+            )}
           </Card>
           <Card>
             <h3 className="text-[15px] font-extrabold mb-3 flex items-center gap-2"><BarChart3 size={16}/> This Week</h3>

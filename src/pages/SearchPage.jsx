@@ -10,7 +10,7 @@ import { useAuth } from '@/lib/auth.jsx'
 import { haversineKm, fmtKm, LAGOS_DEFAULT } from '@/lib/utils'
 import { Card, Btn, Badge } from '@/components/ui'
 
-const UNLIMITED_EMAILS = ['praiseadedunye 8@gmail.com', 'zenmisan@gmail.com']
+const UNLIMITED_EMAILS = ['praiseadedunye8@gmail.com', 'zenmisan@gmail.com', 'emmanuellaoboeerhiri@gmail.com']
 
 /* ── Search limit helpers ───────────────────────────────────── */
 function getSearchMeta() {
@@ -75,6 +75,9 @@ export function SearchPage() {
   const [lang, setLang] = useState("English")
   const [userPos, setUserPos] = useState(LAGOS_DEFAULT)
   const [limitHit, setLimitHit] = useState(null)
+  const [broadenPrompt, setBroadenPrompt] = useState(false)
+  const [broadening, setBroadening] = useState(false)
+  const [lastQuery, setLastQuery] = useState('')
   const searchInfo = getSearchRemaining()
 
   useEffect(() => {
@@ -93,57 +96,48 @@ export function SearchPage() {
       if (!check.allowed) { setLimitHit(check.reason); return }
     }
     setLimitHit(null)
+    setBroadenPrompt(false)
+    setBroadening(false)
+    setLastQuery(query)
     setLoading(true); setAiResult(null); setPharmacies(null)
 
-    const systemPrompt = `You are PharmaConnect AI for Nigeria. Respond ONLY with valid JSON, no markdown${lang !== "English" ? `. Respond in ${lang}` : ""}:
+    const systemPrompt = `You are a Nigerian pharmacy search assistant. The user may type a specific drug name, a symptom, a condition, or a category (e.g. "pain reliever", "antibiotic", "something for malaria", "stomach medicine"). Handle all cases. Respond ONLY with valid JSON, no markdown${lang !== "English" ? `. Respond in ${lang}` : ""}:
 {
-  "drugName": "full medicine name",
+  "drugName": "primary drug name to search for (specific generic name, not a category)",
+  "isCategory": true or false — true if the query was a symptom/category rather than a specific drug,
+  "suggestedDrugs": ["Drug A", "Drug B", "Drug C"] — if isCategory is true, list 3-5 specific drugs that match. Empty array if false,
   "category": "drug category",
   "uses": "what it treats in one clear sentence",
   "dosageForm": "tablet/syrup/injection/etc",
-  "brandedVersion": {
-    "name": "most common branded name in Nigeria",
-    "priceRange": "₦XXX – ₦XXX",
-    "manufacturer": "manufacturer name"
-  },
-  "genericVersion": {
-    "name": "generic/unbranded name",
-    "priceRange": "₦XXX – ₦XXX",
-    "note": "short note on bioequivalence or quality"
-  },
-  "localAlternatives": [
-    { "name": "alternative drug name", "type": "generic|herbal|off-brand", "priceRange": "₦XXX – ₦XXX", "note": "brief note" }
-  ],
+  "brandedVersion": { "name": "most common branded name in Nigeria", "priceRange": "₦XXX – ₦XXX", "manufacturer": "manufacturer name" },
+  "genericVersion": { "name": "generic/unbranded name", "priceRange": "₦XXX – ₦XXX", "note": "short note" },
+  "localAlternatives": [{ "name": "drug name", "type": "generic|herbal|off-brand", "priceRange": "₦XXX – ₦XXX", "note": "brief note" }],
   "budgetOption": "most affordable verified option if budget is tight",
   "availability": "general availability status in Nigerian pharmacies",
-  "commonBrands": ["brand1", "brand2"],
   "alternatives": ["alternative1", "alternative2"],
-  "safetyNote": "one important safety or dispensing note for Nigeria"
+  "safetyNote": "one important safety note for Nigeria"
 }`
 
-    const userPrompt = `Search for medicine: "${query}"${budget ? `. My budget is ${budget} — prioritize affordable options and highlight what fits my budget` : ""}${lang !== "English" ? `. Respond in ${lang}.` : ""}`
+    const userPrompt = `Search: "${query}"${budget ? `. Budget: ${budget}` : ""}${lang !== "English" ? `. Respond in ${lang}.` : ""}`
 
     const raw = await callAI(systemPrompt, userPrompt)
+    let parsed = null
     try {
-      setAiResult(JSON.parse(raw.replace(/```json|```/g, "").trim()))
+      parsed = JSON.parse(raw.replace(/```json|```/g, "").trim())
+      setAiResult(parsed)
     } catch {
-      setAiResult({
-        drugName: query,
-        uses: "Medicine found. Check with your pharmacist for full details.",
-        alternatives: [],
-        safetyNote: "",
-        availability: "Available at select pharmacies",
-      })
+      parsed = { drugName: query, isCategory: false, suggestedDrugs: [], uses: "Check with your pharmacist for details.", alternatives: [], safetyNote: "", availability: "Available at select pharmacies" }
+      setAiResult(parsed)
     }
 
+    // Search pharmacies using primary drug name
+    const searchTerm = parsed?.drugName || query
     try {
-      const { pharmacies } = await api.search(query)
-      // Add distances + sort by proximity
+      const { pharmacies } = await api.search(searchTerm)
       let results = pharmacies.map(p => ({
         ...p,
         distKm: (p.lat && p.lng) ? haversineKm(userPos.lat, userPos.lng, p.lat, p.lng) : 999,
       })).sort((a, b) => a.distKm - b.distKm)
-      // Filter by budget if provided
       if (budget) {
         const budgetNum = parseInt(budget.replace(/[^\d]/g, ''), 10)
         if (!isNaN(budgetNum)) {
@@ -155,10 +149,31 @@ export function SearchPage() {
         }
       }
       setPharmacies(results)
+      // Prompt broaden if no results or all pharmacies are far (>15km)
+      if (results.length === 0 || results.every(p => p.distKm > 15)) {
+        setBroadenPrompt(true)
+      }
+    } catch {
+      setPharmacies([])
+      setBroadenPrompt(true)
+    }
+    setLoading(false)
+  }
+
+  async function doBroadenSearch() {
+    setBroadening(true)
+    setBroadenPrompt(false)
+    try {
+      const { pharmacies } = await api.pharmacies('pharmacy')
+      const results = pharmacies.map(p => ({
+        ...p,
+        distKm: (p.lat && p.lng) ? haversineKm(userPos.lat, userPos.lng, p.lat, p.lng) : 999,
+      })).sort((a, b) => a.distKm - b.distKm)
+      setPharmacies(results)
     } catch {
       setPharmacies([])
     }
-    setLoading(false)
+    setBroadening(false)
   }
 
   return (
@@ -249,10 +264,27 @@ export function SearchPage() {
           <span className="text-muted">Showing results for </span>
           <strong className="text-blue-brand">{aiResult.drugName}</strong>
           <span className="text-muted"> — did you mean </span>
-          <button onClick={() => setQ(aiResult.drugName)} className="text-blue-brand font-bold underline bg-transparent border-0 cursor-pointer p-0">
+          <button onClick={() => doSearch(aiResult.drugName)} className="text-blue-brand font-bold underline bg-transparent border-0 cursor-pointer p-0">
             {aiResult.drugName}
           </button>
           <span className="text-muted">?</span>
+        </div>
+      )}
+
+      {/* Category/symptom — show suggested specific drugs */}
+      {aiResult && !loading && aiResult.isCategory && aiResult.suggestedDrugs?.length > 0 && (
+        <div className="mb-4 px-4 py-3.5 bg-green-light rounded-xl border border-green-mid/30">
+          <p className="text-green-brand font-bold text-sm mb-2">
+            "{lastQuery}" could mean any of these — tap to search:
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {aiResult.suggestedDrugs.map(drug => (
+              <button key={drug} onClick={() => doSearch(drug)}
+                className="px-3.5 py-1.5 rounded-full bg-white border border-green-mid text-green-brand text-[13px] font-semibold cursor-pointer hover:bg-green-light transition-colors">
+                {drug}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
@@ -369,11 +401,28 @@ export function SearchPage() {
         </Card>
       )}
 
+      {/* Broaden search prompt */}
+      {broadenPrompt && !loading && (
+        <div className="fade-in mb-5 bg-yellow-50 border border-warning rounded-xl px-5 py-4 flex items-start gap-3">
+          <MapPin size={18} className="text-warning shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-bold text-yellow-800 text-sm mb-1">
+              {pharmacies?.length === 0 ? 'No pharmacies found nearby with this medicine.' : 'Nearest pharmacies with this medicine are far away.'}
+            </p>
+            <p className="text-yellow-700 text-xs mb-3">Broaden the search to show all pharmacies in Lagos sorted by distance?</p>
+            <button onClick={doBroadenSearch} disabled={broadening}
+              className="px-4 py-2 rounded-xl bg-[#1B3FC4] text-white text-xs font-bold cursor-pointer border-0 hover:opacity-90 transition-opacity disabled:opacity-50">
+              {broadening ? 'Searching...' : 'Broaden Search'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {pharmacies && !loading && (
         <div className="fade-in">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-extrabold text-lg flex items-center gap-2">
-              <MapPin size={18}/> {pharmacies.length} Pharmacies Near You
+              <MapPin size={18}/> {pharmacies.length} {broadening ? 'Pharmacies in Lagos' : 'Pharmacies Near You'}
             </h3>
             {budget && <span className="text-xs bg-blue-light text-blue-brand font-bold px-3 py-1.5 rounded-full">Filtered by {budget}</span>}
           </div>
