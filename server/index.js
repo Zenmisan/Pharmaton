@@ -15,6 +15,11 @@ import aiRoutes from './routes/ai.js'
 const app = express()
 app.use(cors())
 app.use(express.json())
+// Allow Google OAuth popup to communicate back
+app.use((req, res, next) => {
+  res.removeHeader('Cross-Origin-Opener-Policy')
+  next()
+})
 
 app.use('/api/auth', authRoutes)
 app.use('/api/inventory', requireAuth, inventoryRoutes)
