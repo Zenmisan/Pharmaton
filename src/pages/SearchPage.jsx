@@ -6,8 +6,11 @@ import {
 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { callAI } from '@/lib/ai'
+import { useAuth } from '@/lib/auth.jsx'
 import { haversineKm, fmtKm, LAGOS_DEFAULT } from '@/lib/utils'
 import { Card, Btn, Badge } from '@/components/ui'
+
+const UNLIMITED_EMAILS = ['praiseadedun8@gmail.com', 'zenmisan@gmail.com']
 
 /* ── Search limit helpers ───────────────────────────────────── */
 function getSearchMeta() {
@@ -62,6 +65,8 @@ function getSearchRemaining() {
 /* ─── SEARCH PAGE ────────────────────────────────────────────── */
 export function SearchPage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const isUnlimited = UNLIMITED_EMAILS.includes(user?.email)
   const [q, setQ] = useState("")
   const [loading, setLoading] = useState(false)
   const [aiResult, setAiResult] = useState(null)
@@ -83,8 +88,10 @@ export function SearchPage() {
     const query = overrideQ ?? q
     if (!query.trim()) return
     if (overrideQ) setQ(overrideQ)
-    const check = checkAndIncrementSearch()
-    if (!check.allowed) { setLimitHit(check.reason); return }
+    if (!isUnlimited) {
+      const check = checkAndIncrementSearch()
+      if (!check.allowed) { setLimitHit(check.reason); return }
+    }
     setLimitHit(null)
     setLoading(true); setAiResult(null); setPharmacies(null)
 
@@ -167,14 +174,14 @@ export function SearchPage() {
       </div>
 
       {/* Search limit banner */}
-      <div className={`mb-4 px-4 py-3 rounded-xl flex items-center justify-between gap-3 flex-wrap text-sm ${searchInfo.remaining <= 1 ? 'bg-yellow-50 border border-warning/40' : 'bg-blue-light border border-blue-brand/15'}`}>
+      {!isUnlimited && <div className={`mb-4 px-4 py-3 rounded-xl flex items-center justify-between gap-3 flex-wrap text-sm ${searchInfo.remaining <= 1 ? 'bg-yellow-50 border border-warning/40' : 'bg-blue-light border border-blue-brand/15'}`}>
         <span className={searchInfo.remaining <= 1 ? 'text-yellow-800' : 'text-blue-brand'}>
           <strong>{searchInfo.remaining}</strong> of {searchInfo.limit} {searchInfo.remaining === 1 ? 'search' : 'searches'} remaining {searchInfo.period}
         </span>
         <button onClick={() => navigate('/pricing')} className="text-[12px] font-bold text-blue-brand bg-transparent border-0 cursor-pointer underline p-0">
           Upgrade for unlimited
         </button>
-      </div>
+      </div>}
 
       {limitHit && (
         <div className="mb-4 bg-yellow-50 border border-warning rounded-xl px-4 py-4 flex items-start gap-3">
