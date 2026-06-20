@@ -111,29 +111,31 @@ export function SearchPage() {
         </div>
       </div>
 
-      <Card className="mb-6 !p-5">
-        <div className="grid gap-3" style={{ gridTemplateColumns: '1fr auto auto' }}>
+      <Card className="mb-6 !p-4 sm:!p-5">
+        <div className="flex flex-col gap-3">
           <div>
             <label className="text-[11px] font-bold text-muted block mb-1.5">MEDICINE NAME</label>
             <input value={q} onChange={e => setQ(e.target.value)} onKeyDown={e => e.key === "Enter" && doSearch()}
               placeholder="e.g. Paracetamol, Augmentin, Insulin..."
               className="w-full border-[1.5px] border-border rounded-xl px-4 py-2.5 text-[15px] outline-none transition-colors focus:border-blue-brand"/>
           </div>
-          <div>
-            <label className="text-[11px] font-bold text-muted block mb-1.5">LANGUAGE</label>
-            <select value={lang} onChange={e => setLang(e.target.value)}
-              className="border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none bg-white text-text h-full">
-              {["English","Yoruba","Hausa","Igbo","French"].map(l => <option key={l}>{l}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="text-[11px] font-bold text-muted block mb-1.5">BUDGET</label>
-            <input value={budget} onChange={e => setBudget(e.target.value)} placeholder="e.g. ₦500"
-              className="w-[120px] border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors"/>
+          <div className="flex gap-3 flex-wrap">
+            <div className="flex-1 min-w-[130px]">
+              <label className="text-[11px] font-bold text-muted block mb-1.5">LANGUAGE</label>
+              <select value={lang} onChange={e => setLang(e.target.value)}
+                className="w-full border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none bg-white text-text">
+                {["English","Yoruba","Hausa","Igbo","French"].map(l => <option key={l}>{l}</option>)}
+              </select>
+            </div>
+            <div className="flex-1 min-w-[130px]">
+              <label className="text-[11px] font-bold text-muted block mb-1.5">BUDGET</label>
+              <input value={budget} onChange={e => setBudget(e.target.value)} placeholder="e.g. ₦500"
+                className="w-full border-[1.5px] border-border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors"/>
+            </div>
           </div>
         </div>
-        <div className="mt-3.5 flex gap-3 items-center flex-wrap">
-          <Btn size="lg" onClick={() => doSearch()} className="min-w-[160px]">
+        <div className="mt-3.5 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          <Btn size="lg" onClick={() => doSearch()} className="w-full sm:w-auto min-w-[140px]">
             {loading ? <Loader2 size={16} className="spin"/> : <Search size={16}/>}
             Search
           </Btn>
@@ -159,16 +161,18 @@ export function SearchPage() {
       {aiResult && !loading && (
         <Card className="fade-in mb-5 border-[1.5px] border-blue-brand/20"
           style={{ background: 'linear-gradient(135deg,rgba(232,237,251,0.4),rgba(220,252,231,0.4))' }}>
-          <div className="flex gap-3.5 items-start mb-5">
-            <div className="size-12 rounded-[14px] bg-grad-main flex items-center justify-center shrink-0 text-white">
-              <Bot size={22}/>
+          <div className="flex gap-3 items-start mb-5 flex-wrap">
+            <div className="size-10 rounded-[12px] bg-grad-main flex items-center justify-center shrink-0 text-white">
+              <Bot size={20}/>
             </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-black mb-0.5">{aiResult.drugName}</h2>
+            <div className="flex-1 min-w-[160px]">
+              <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                <h2 className="text-lg font-black">{aiResult.drugName}</h2>
+                <span className="bg-green-light text-green-brand text-[10px] font-bold rounded-lg px-2 py-0.5 shrink-0">VERIFIED</span>
+              </div>
               {aiResult.category && <p className="text-muted text-[13px]">{aiResult.category}{aiResult.dosageForm ? ` · ${aiResult.dosageForm}` : ""}</p>}
               {aiResult.uses && <p className="text-[13px] text-text mt-1">{aiResult.uses}</p>}
             </div>
-            <span className="bg-green-light text-green-brand text-[11px] font-bold rounded-lg px-2.5 py-1 shrink-0">AI VERIFIED</span>
           </div>
 
           {/* Branded vs Generic comparison */}

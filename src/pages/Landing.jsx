@@ -7,7 +7,7 @@ import { MapPin, Shield, AlertOctagon, Clock, Phone } from 'lucide-react'
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy'
 import PersonIcon from '@mui/icons-material/Person'
 import { Logo } from '@/components/Logo'
-import { Card, Btn } from '@/components/ui'
+import { Card } from '@/components/ui'
 
 export function Landing() {
   const navigate  = useNavigate()
@@ -211,7 +211,7 @@ export function Landing() {
 
       {/* ── FOOTER ── */}
       <footer className="bg-[#14130F] py-14 px-6">
-        <div className="max-w-[1000px] mx-auto grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-8">
+        <div className="max-w-[1000px] mx-auto grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-8">
           <div>
             <div className="flex items-center gap-2.5 mb-3">
               <Logo size={28} />
@@ -221,19 +221,19 @@ export function Landing() {
           </div>
           <div>
             <p className="text-white/70 font-bold text-[13px] mb-3">Platform</p>
-            <p className="text-white/40 text-[13px] mb-2">Search Medicines</p>
-            <p className="text-white/40 text-[13px] mb-2">Find Pharmacies</p>
-            <p className="text-white/40 text-[13px]">Safety Alerts</p>
+            <button onClick={() => onChoose('patient')} className="block text-white/40 text-[13px] mb-2 bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">Search Medicines</button>
+            <button onClick={() => onChoose('patient')} className="block text-white/40 text-[13px] mb-2 bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">Find Pharmacies</button>
+            <button onClick={() => onChoose('patient')} className="block text-white/40 text-[13px] bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">Safety Alerts</button>
           </div>
           <div>
             <p className="text-white/70 font-bold text-[13px] mb-3">For Pharmacists</p>
-            <p className="text-white/40 text-[13px] mb-2">Manage Inventory</p>
-            <p className="text-white/40 text-[13px]">Patient Requests</p>
+            <button onClick={() => onChoose('pharmacist')} className="block text-white/40 text-[13px] mb-2 bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">Manage Inventory</button>
+            <button onClick={() => onChoose('pharmacist')} className="block text-white/40 text-[13px] bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">Join as Pharmacist</button>
           </div>
           <div>
-            <p className="text-white/70 font-bold text-[13px] mb-3">Compliance</p>
-            <p className="text-white/40 text-[13px] mb-2">NAFDAC Approved</p>
-            <p className="text-white/40 text-[13px]">PCN · CAC Verified</p>
+            <p className="text-white/70 font-bold text-[13px] mb-3">Company</p>
+            <button onClick={() => navigate('/about')} className="block text-white/40 text-[13px] mb-2 bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">About Us</button>
+            <button onClick={() => navigate('/about')} className="block text-white/40 text-[13px] bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">Our Team</button>
           </div>
         </div>
         <div className="max-w-[1000px] mx-auto border-t border-white/10 mt-10 pt-6 text-white/25 text-xs">

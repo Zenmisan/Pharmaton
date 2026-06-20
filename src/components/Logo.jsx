@@ -2,7 +2,7 @@
 export function Logo({ size = 36, className = '' }) {
   return (
     <img
-      src="/IMG-20260617-WA0063.jpg"
+      src="/logo.png"
       alt="PharmaConnect"
       width={size}
       height={size}

@@ -16,6 +16,7 @@ import { PharmacyDetail } from '@/pages/PharmacyDetail'
 import { PharmacistDashboard } from '@/pages/PharmacistDashboard'
 import { InventoryPage } from '@/pages/InventoryPage'
 import { InsightsPage } from '@/pages/InsightsPage'
+import { AboutPage } from '@/pages/AboutPage'
 
 /* ─── PROTECTED ROUTE ────────────────────────────────────────── */
 function ProtectedRoute({ children }) {
@@ -84,6 +85,9 @@ function App() {
           {/* Shared */}
           <Route path="/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage userType={userType} onSwitchRole={signOut} onSignOut={signOut} /></ProtectedRoute>} />
+
+          {/* Public info pages */}
+          <Route path="/about" element={<AboutPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
