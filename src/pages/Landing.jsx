@@ -27,7 +27,7 @@ export function Landing() {
 
       if (cardsRef.current) {
         gsap.from(cardsRef.current.querySelectorAll('.role-card'), {
-          opacity: 0, y: 40, duration: 0.5, stagger: 0.12, ease: 'power3.out', delay: 0.4,
+          y: 40, duration: 0.5, stagger: 0.12, ease: 'power3.out', delay: 0.4,
         })
       }
       if (featuresRef.current) {
