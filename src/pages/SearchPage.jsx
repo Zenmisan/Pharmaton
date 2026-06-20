@@ -2,12 +2,62 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Search, Loader2, Bot, MapPin, Star, CheckCircle2, AlertTriangle,
-  Navigation, Phone, ChevronLeft, DollarSign, Tag, Clock, ChevronRight,
+  Navigation, Phone, ChevronLeft, DollarSign, Tag, Clock, ChevronRight, Lock,
 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { callAI } from '@/lib/ai'
 import { haversineKm, fmtKm, LAGOS_DEFAULT } from '@/lib/utils'
 import { Card, Btn, Badge } from '@/components/ui'
+
+/* ── Search limit helpers ───────────────────────────────────── */
+function getSearchMeta() {
+  try {
+    const raw = localStorage.getItem('pc_search_meta')
+    if (raw) return JSON.parse(raw)
+  } catch {}
+  // First time — record signup epoch as now
+  const meta = { signupDate: Date.now(), dailyCount: 0, dailyDate: '', monthlyCount: 0, monthlyMonth: '' }
+  localStorage.setItem('pc_search_meta', JSON.stringify(meta))
+  return meta
+}
+function saveSearchMeta(meta) {
+  localStorage.setItem('pc_search_meta', JSON.stringify(meta))
+}
+function checkAndIncrementSearch() {
+  const meta = getSearchMeta()
+  const now   = new Date()
+  const today = now.toISOString().slice(0, 10)
+  const month = now.toISOString().slice(0, 7)
+  const ageMs = now - meta.signupDate
+  const firstMonth = ageMs < 30 * 24 * 60 * 60 * 1000
+
+  if (firstMonth) {
+    // 3 per day limit
+    if (meta.dailyDate !== today) { meta.dailyCount = 0; meta.dailyDate = today }
+    if (meta.dailyCount >= 3) return { allowed: false, reason: '3 searches per day limit reached on free plan', firstMonth: true }
+    meta.dailyCount++
+  } else {
+    // 10 per month limit
+    if (meta.monthlyMonth !== month) { meta.monthlyCount = 0; meta.monthlyMonth = month }
+    if (meta.monthlyCount >= 10) return { allowed: false, reason: '10 searches per month limit reached on free plan', firstMonth: false }
+    meta.monthlyCount++
+  }
+  saveSearchMeta(meta)
+  return { allowed: true, firstMonth, remaining: firstMonth ? 3 - meta.dailyCount : 10 - meta.monthlyCount }
+}
+function getSearchRemaining() {
+  const meta = getSearchMeta()
+  const now   = new Date()
+  const today = now.toISOString().slice(0, 10)
+  const month = now.toISOString().slice(0, 7)
+  const firstMonth = (now - meta.signupDate) < 30 * 24 * 60 * 60 * 1000
+  if (firstMonth) {
+    const count = meta.dailyDate === today ? meta.dailyCount : 0
+    return { firstMonth, remaining: Math.max(0, 3 - count), limit: 3, period: 'today' }
+  }
+  const count = meta.monthlyMonth === month ? meta.monthlyCount : 0
+  return { firstMonth, remaining: Math.max(0, 10 - count), limit: 10, period: 'this month' }
+}
 
 /* ─── SEARCH PAGE ────────────────────────────────────────────── */
 export function SearchPage() {
@@ -19,6 +69,8 @@ export function SearchPage() {
   const [budget, setBudget] = useState("")
   const [lang, setLang] = useState("English")
   const [userPos, setUserPos] = useState(LAGOS_DEFAULT)
+  const [limitHit, setLimitHit] = useState(null)
+  const searchInfo = getSearchRemaining()
 
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
@@ -31,6 +83,9 @@ export function SearchPage() {
     const query = overrideQ ?? q
     if (!query.trim()) return
     if (overrideQ) setQ(overrideQ)
+    const check = checkAndIncrementSearch()
+    if (!check.allowed) { setLimitHit(check.reason); return }
+    setLimitHit(null)
     setLoading(true); setAiResult(null); setPharmacies(null)
 
     const systemPrompt = `You are PharmaConnect AI for Nigeria. Respond ONLY with valid JSON, no markdown${lang !== "English" ? `. Respond in ${lang}` : ""}:
@@ -111,6 +166,30 @@ export function SearchPage() {
         </div>
       </div>
 
+      {/* Search limit banner */}
+      <div className={`mb-4 px-4 py-3 rounded-xl flex items-center justify-between gap-3 flex-wrap text-sm ${searchInfo.remaining <= 1 ? 'bg-yellow-50 border border-warning/40' : 'bg-blue-light border border-blue-brand/15'}`}>
+        <span className={searchInfo.remaining <= 1 ? 'text-yellow-800' : 'text-blue-brand'}>
+          <strong>{searchInfo.remaining}</strong> of {searchInfo.limit} {searchInfo.remaining === 1 ? 'search' : 'searches'} remaining {searchInfo.period}
+        </span>
+        <button onClick={() => navigate('/pricing')} className="text-[12px] font-bold text-blue-brand bg-transparent border-0 cursor-pointer underline p-0">
+          Upgrade for unlimited
+        </button>
+      </div>
+
+      {limitHit && (
+        <div className="mb-4 bg-yellow-50 border border-warning rounded-xl px-4 py-4 flex items-start gap-3">
+          <Lock size={18} className="text-warning shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-bold text-yellow-800 text-sm mb-1">{limitHit}</p>
+            <p className="text-yellow-700 text-xs mb-3">Upgrade to Premium for unlimited searches.</p>
+            <button onClick={() => navigate('/pricing')}
+              className="px-4 py-2 rounded-xl bg-[#1B3FC4] text-white text-xs font-bold cursor-pointer border-0 hover:opacity-90 transition-opacity">
+              View Plans
+            </button>
+          </div>
+        </div>
+      )}
+
       <Card className="mb-6 !p-4 sm:!p-5">
         <div className="flex flex-col gap-3">
           <div>
@@ -156,6 +235,18 @@ export function SearchPage() {
           <p className="font-bold text-base mb-1">PharmaConnect AI is searching...</p>
           <p className="text-muted text-sm">Comparing branded · generic · local alternatives</p>
         </Card>
+      )}
+
+      {aiResult && !loading && aiResult.drugName && aiResult.drugName.toLowerCase() !== q.toLowerCase() && (
+        <div className="mb-3 px-4 py-2.5 bg-blue-light rounded-xl border border-blue-brand/20 text-sm">
+          <span className="text-muted">Showing results for </span>
+          <strong className="text-blue-brand">{aiResult.drugName}</strong>
+          <span className="text-muted"> — did you mean </span>
+          <button onClick={() => setQ(aiResult.drugName)} className="text-blue-brand font-bold underline bg-transparent border-0 cursor-pointer p-0">
+            {aiResult.drugName}
+          </button>
+          <span className="text-muted">?</span>
+        </div>
       )}
 
       {aiResult && !loading && (

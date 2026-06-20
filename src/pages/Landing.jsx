@@ -112,7 +112,7 @@ export function Landing() {
             ref={descRef}
             className="text-white/80 text-[clamp(16px,2.2vw,20px)] mb-10 leading-[1.7] max-w-[560px] mx-auto"
           >
-            PharmaConnect connects patients with nearby pharmacies across Lagos — check stock, get directions, call directly.
+            PharmaConnect connects patients with nearby pharmacies across Lagos check stock, get directions, call directly.
           </p>
           <div ref={ctaRef} className="flex gap-4 justify-center flex-wrap">
             <button
@@ -232,8 +232,9 @@ export function Landing() {
           </div>
           <div>
             <p className="text-white/70 font-bold text-[13px] mb-3">Company</p>
-            <button onClick={() => navigate('/about')} className="block text-white/40 text-[13px] mb-2 bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">About Us</button>
-            <button onClick={() => navigate('/about')} className="block text-white/40 text-[13px] bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">Our Team</button>
+            <button onClick={() => navigate('/about')}   className="block text-white/40 text-[13px] mb-2 bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">About Us</button>
+            <button onClick={() => navigate('/pricing')} className="block text-white/40 text-[13px] mb-2 bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">Pricing</button>
+            <button onClick={() => navigate('/contact')} className="block text-white/40 text-[13px] bg-transparent border-0 cursor-pointer hover:text-white/70 transition-colors p-0 text-left">Contact & Support</button>
           </div>
         </div>
         <div className="max-w-[1000px] mx-auto border-t border-white/10 mt-10 pt-6 text-white/25 text-xs">

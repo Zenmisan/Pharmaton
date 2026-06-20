@@ -17,6 +17,8 @@ import { PharmacistDashboard } from '@/pages/PharmacistDashboard'
 import { InventoryPage } from '@/pages/InventoryPage'
 import { InsightsPage } from '@/pages/InsightsPage'
 import { AboutPage } from '@/pages/AboutPage'
+import { ContactPage } from '@/pages/ContactPage'
+import { PricingPage } from '@/pages/PricingPage'
 
 /* ─── PROTECTED ROUTE ────────────────────────────────────────── */
 function ProtectedRoute({ children }) {
@@ -88,6 +90,8 @@ function App() {
 
           {/* Public info pages */}
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

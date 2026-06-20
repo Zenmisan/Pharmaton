@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ChevronLeft, Sparkles } from 'lucide-react'
+import { ChevronLeft, Sparkles, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '@/lib/auth.jsx'
 import { Logo } from '@/components/Logo'
 import { Card, Btn } from '@/components/ui'
@@ -53,6 +53,8 @@ export function AuthScreen() {
   const [busy, setBusy]           = useState(false)
 
   // Google new-user: show role selection inline
+  const [showPass, setShowPass]           = useState(false)
+
   const [googlePrefill, setGooglePrefill] = useState(null)
   const [googleRole, setGoogleRole]       = useState("patient")
   const [googleOrgName, setGoogleOrgName] = useState("")
@@ -158,9 +160,12 @@ export function AuthScreen() {
                 <input value={googleLocation} onChange={e => setGoogleLocation(e.target.value)}
                   placeholder="Location (e.g. Surulere, Lagos)"
                   className="border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors"/>
-                <input value={googleLicense} onChange={e => setGoogleLicense(e.target.value)}
-                  placeholder="PCN license number (optional)"
-                  className="border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors"/>
+                <div>
+                  <input value={googleLicense} onChange={e => setGoogleLicense(e.target.value)}
+                    placeholder="PCN license number" required
+                    className="w-full border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors"/>
+                  <p className="text-muted text-[11px] mt-1 px-1">Required · Demo: <code className="bg-surface px-1 rounded">12345678</code></p>
+                </div>
               </>
             )}
             {err && <p className="text-danger text-[13px] font-semibold">{err}</p>}
@@ -217,8 +222,14 @@ export function AuthScreen() {
           )}
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required
             className="border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors"/>
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required minLength={6}
-            className="border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors"/>
+          <div className="relative">
+            <input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required minLength={6}
+              className="w-full border-[1.5px] border-border rounded-xl px-4 py-2.5 pr-10 text-sm outline-none focus:border-blue-brand transition-colors"/>
+            <button type="button" onClick={() => setShowPass(p => !p)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-text transition-colors bg-transparent border-0 cursor-pointer p-0">
+              {showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
+            </button>
+          </div>
           {mode === "signup" && role === "pharmacist" && (
             <>
               <input value={orgName} onChange={e => setOrgName(e.target.value)}
@@ -227,9 +238,12 @@ export function AuthScreen() {
               <input value={location} onChange={e => setLocation(e.target.value)}
                 placeholder="Location (e.g. Surulere, Lagos)"
                 className="border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors"/>
-              <input value={licenseNum} onChange={e => setLicenseNum(e.target.value)}
-                placeholder="PCN license number (optional)"
-                className="border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors"/>
+              <div>
+                <input value={licenseNum} onChange={e => setLicenseNum(e.target.value)}
+                  placeholder="PCN license number" required
+                  className="w-full border-[1.5px] border-border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-brand transition-colors"/>
+                <p className="text-muted text-[11px] mt-1 px-1">Required · Demo: <code className="bg-surface px-1 rounded">12345678</code></p>
+              </div>
             </>
           )}
           {err && <p className="text-danger text-[13px] font-semibold">{err}</p>}
