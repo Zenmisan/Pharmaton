@@ -10,7 +10,7 @@ import { useAuth } from '@/lib/auth.jsx'
 import { haversineKm, fmtKm, LAGOS_DEFAULT } from '@/lib/utils'
 import { Card, Btn, Badge } from '@/components/ui'
 
-const UNLIMITED_EMAILS = ['praiseadedun8@gmail.com', 'zenmisan@gmail.com']
+const UNLIMITED_EMAILS = ['praiseadedunye 8@gmail.com', 'zenmisan@gmail.com']
 
 /* ── Search limit helpers ───────────────────────────────────── */
 function getSearchMeta() {
