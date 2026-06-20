@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* Inter loaded via index.html */
 @import "tailwindcss";
 
 @theme {
@@ -29,8 +29,8 @@
   --radius-xl: 20px;
 
   /* ── Typography ─────────────────────────────────────────────── */
-  --font-sans:    'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans:    'Inter', system-ui, sans-serif;
+  --font-display: 'Inter', system-ui, sans-serif;
 
   /* ── Keyframes ──────────────────────────────────────────────── */
   --animate-fade-up:    fade-up   0.35s cubic-bezier(0.16,1,0.3,1) both;
@@ -71,7 +71,7 @@
     color: var(--color-text);
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.01em; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
 
   ::-webkit-scrollbar       { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }

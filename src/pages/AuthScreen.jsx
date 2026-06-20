@@ -17,6 +17,23 @@ function GoogleIcon() {
   )
 }
 
+function friendlyError(e) {
+  const code = e?.code || ''
+  const msg  = e?.message || ''
+  if (code === 'auth/email-already-in-use')    return 'An account with this email already exists. Try signing in instead.'
+  if (code === 'auth/invalid-email')            return 'That email address doesn\'t look right. Please check and try again.'
+  if (code === 'auth/weak-password')            return 'Password must be at least 6 characters.'
+  if (code === 'auth/wrong-password')           return 'Incorrect password. Please try again.'
+  if (code === 'auth/user-not-found')           return 'No account found with that email. Did you mean to sign up?'
+  if (code === 'auth/invalid-credential')       return 'Incorrect email or password. Please try again.'
+  if (code === 'auth/too-many-requests')        return 'Too many attempts. Please wait a few minutes and try again.'
+  if (code === 'auth/network-request-failed')   return 'Network error. Check your connection and try again.'
+  if (code === 'auth/popup-closed-by-user')     return 'Google sign-in was cancelled. Try again when ready.'
+  if (code === 'auth/popup-blocked')            return 'Pop-up was blocked. Please allow pop-ups for this site and try again.'
+  if (msg.includes('404'))                      return 'Account not found on our servers. Please sign up first.'
+  return 'Something went wrong. Please try again.'
+}
+
 /* ─── AUTH SCREEN ─────────────────────────────────────────────── */
 export function AuthScreen() {
   const { login, signup, signOut, googleLogin, completeGoogleSignup, devLogin } = useAuth()
@@ -57,7 +74,7 @@ export function AuthScreen() {
         navigate('/verify-email')
       }
     } catch (e2) {
-      setErr(e2.message)
+      setErr(friendlyError(e2))
     } finally {
       setBusy(false)
     }
@@ -74,7 +91,7 @@ export function AuthScreen() {
         setGoogleRole("patient")
       }
     } catch (e2) {
-      setErr(e2.message)
+      setErr(friendlyError(e2))
     } finally {
       setBusy(false)
     }
@@ -95,7 +112,7 @@ export function AuthScreen() {
       })
       navigate('/dashboard')
     } catch (e2) {
-      setErr(e2.message)
+      setErr(friendlyError(e2))
     } finally {
       setBusy(false)
     }
@@ -107,7 +124,7 @@ export function AuthScreen() {
       await devLogin(demoRole)
       navigate('/dashboard')
     } catch (e2) {
-      setErr(e2.message)
+      setErr(friendlyError(e2))
     } finally {
       setBusy(false)
     }

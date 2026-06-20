@@ -19,7 +19,7 @@ export function Nav({ userType, onSignOut }) {
 
   const links = userType === "patient"
     ? [["/dashboard","Home"],["/search","Search Medicine"],["/map","Find Pharmacies"],["/alerts","Safety Alerts"]]
-    : [["/dashboard","Dashboard"],["/inventory","Inventory"],["/insights","AI Insights"]]
+    : [["/dashboard","Dashboard"],["/inventory","Inventory"],["/insights","Insights"]]
 
   return (
     <nav className={cn(
@@ -34,7 +34,6 @@ export function Nav({ userType, onSignOut }) {
           <Logo size={34} />
           <span className="font-display font-black text-lg text-text">
             Pharma<span className="text-green-mid">Connect</span>
-            <span className="text-[13px] font-extrabold ml-1 border border-border px-1.5 py-px rounded-md text-blue-brand">AI</span>
           </span>
         </button>
 

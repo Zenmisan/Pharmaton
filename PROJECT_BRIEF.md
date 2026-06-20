@@ -1,7 +1,7 @@
 # PharmaConnect AI — Project Brief
 
 **Version 1.0 · June 2026**
-**Author: Akin-David Ireyemi**
+**Author: Zenmi**
 
 ---
 
