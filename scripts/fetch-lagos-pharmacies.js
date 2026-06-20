@@ -6,33 +6,49 @@
 
 import fs from 'fs'
 import path from 'path'
+import https from 'https'
+import querystring from 'querystring'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUT = path.join(__dirname, 'data', 'lagos_pharmacies_osm.csv')
 
-const QUERY = `
-[out:json][timeout:90];
-area["name"="Lagos"]["admin_level"="4"]->.searchArea;
-(
-  node["amenity"="pharmacy"](area.searchArea);
-  way["amenity"="pharmacy"](area.searchArea);
-  relation["amenity"="pharmacy"](area.searchArea);
-);
-out center tags;
-`.trim()
+// Lagos State bounding box: south,west,north,east
+const BBOX = '6.3900,3.0900,6.7100,3.7000'
+
+const QUERY = `[out:json][timeout:90];(node["amenity"="pharmacy"](${BBOX});way["amenity"="pharmacy"](${BBOX});relation["amenity"="pharmacy"](${BBOX}););out center tags;`
+
+function httpPost(postData) {
+  return new Promise((resolve, reject) => {
+    const body = querystring.stringify({ data: postData })
+    const req = https.request({
+      hostname: 'overpass-api.de',
+      path: '/api/interpreter',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(body),
+        'User-Agent': 'PharmaConnect/1.0 (data seed script)',
+      },
+    }, res => {
+      let raw = ''
+      res.on('data', chunk => { raw += chunk })
+      res.on('end', () => {
+        if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode}: ${raw.slice(0, 200)}`))
+        try { resolve(JSON.parse(raw)) } catch (e) { reject(new Error(`JSON parse error: ${e.message}`)) }
+      })
+    })
+    req.on('error', reject)
+    req.setTimeout(120_000, () => { req.destroy(); reject(new Error('Timeout')) })
+    req.write(body)
+    req.end()
+  })
+}
 
 async function fetchWithRetry(attempt = 1) {
   console.log(`Querying Overpass API (attempt ${attempt})...`)
   try {
-    const res = await fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `data=${encodeURIComponent(QUERY)}`,
-      signal: AbortSignal.timeout(120_000),
-    })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    return await res.json()
+    return await httpPost(QUERY)
   } catch (err) {
     if (attempt === 1) {
       console.warn(`Attempt 1 failed (${err.message}). Retrying in 10s...`)

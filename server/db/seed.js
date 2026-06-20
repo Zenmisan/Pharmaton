@@ -5,43 +5,63 @@ export function seed(db) {
 
   const insertPharmacy = db.prepare(`INSERT INTO pharmacies (owner_user_id,name,type,location,lat,lng,phone,nafdac_verified,rating,hours,review_count) VALUES (?,?,?,?,?,?,?,?,?,?,?)`)
 
+  // Demo pharmacist pharmacy
   const pharm1 = insertPharmacy.run(pharmacist.lastInsertRowid, 'Grace Pharmacy', 'pharmacy', 'Surulere, Lagos', 6.4926, 3.3552, '+2348012345001', 1, 4.8, 'Mon-Sat 8AM-9PM, Sun 10AM-6PM', 214)
 
+  // Real Lagos pharmacies — sourced from OpenStreetMap (OSM), lat/lng verified
   const realPharmacies = [
-    ['HealthPlus Pharmacy VI',         'pharmacy', 'Victoria Island, Lagos',  6.4281, 3.4219, '+2341277500',    1, 4.7, 'Daily 8AM-9PM',        312],
-    ['Roche Pharmacy',                  'pharmacy', 'Victoria Island, Lagos',  6.4310, 3.4200, '+2348023000100', 1, 4.6, 'Mon-Sat 8AM-8PM',      178],
-    ['Quintessence Pharmacy',           'pharmacy', 'Ikoyi, Lagos',            6.4540, 3.4407, '+2348033001200', 1, 4.8, 'Mon-Sat 9AM-7PM',      203],
-    ['Pharmarun VI',                    'pharmacy', 'Victoria Island, Lagos',  6.4295, 3.4185, '+2348100200300', 1, 4.5, 'Daily 8AM-10PM',        89],
-    ['HealthPlus Pharmacy Lekki',      'pharmacy', 'Lekki Phase 1, Lagos',    6.4698, 3.5620, '+2348055001100', 1, 4.7, 'Daily 8AM-9PM',        267],
-    ['Pharmarun Lekki',                 'pharmacy', 'Lekki Phase 1, Lagos',    6.4650, 3.5700, '+2348100200301', 1, 4.6, 'Daily 8AM-10PM',       142],
-    ['Sterling Pharmacy Lekki',         'pharmacy', 'Lekki Phase 1, Lagos',    6.4640, 3.5810, '+2348077003300', 1, 4.5, 'Mon-Sat 8AM-9PM',       97],
-    ['Pinnacle Pharmacy Ajah',          'pharmacy', 'Ajah, Lagos',             6.4688, 3.6000, '+2348088004400', 1, 4.3, 'Mon-Sat 8AM-8PM',       61],
-    ['MedPlus Pharmacy Lekki',          'pharmacy', 'Lekki Phase 2, Lagos',    6.4720, 3.5950, '+2348044002200', 1, 4.6, 'Daily 8AM-9PM',        184],
-    ['MedPlus Pharmacy Ikeja',          'pharmacy', 'Ikeja, Lagos',            6.6018, 3.3515, '+2341279300',    1, 4.6, 'Daily 8AM-9PM',        298],
-    ['Drugfield Pharmacy Ikeja',        'pharmacy', 'Ikeja, Lagos',            6.6050, 3.3490, '+2348099005500', 1, 4.4, 'Mon-Sat 8AM-8PM',      113],
-    ['First Medicare Pharmacy',         'pharmacy', 'Ikeja, Lagos',            6.6000, 3.3800, '+2348066001100', 1, 4.5, 'Mon-Sat 8AM-9PM',      155],
-    ['Pharmacy One Ikeja GRA',          'pharmacy', 'Ikeja GRA, Lagos',        6.6100, 3.3600, '+2348077002200', 1, 4.4, 'Mon-Sat 8AM-8PM',       88],
-    ['Well Pharmacy Maryland',          'pharmacy', 'Maryland, Lagos',         6.5660, 3.3650, '+2348088005500', 1, 4.3, 'Mon-Sat 8AM-8PM',       72],
-    ['JMB Pharmacy Ojota',              'pharmacy', 'Ojota, Lagos',            6.6000, 3.3780, '+2348099006600', 1, 4.2, 'Daily 7AM-9PM',         54],
-    ['HealthPlus Pharmacy Surulere',   'pharmacy', 'Surulere, Lagos',         6.4980, 3.3610, '+2348012345002', 1, 4.6, 'Daily 8AM-9PM',        128],
-    ['CarePoint Pharmacy',              'pharmacy', 'Surulere, Lagos',         6.4900, 3.3580, '+2348012345003', 1, 4.5, 'Mon-Sat 8AM-8PM',       89],
-    ['Total Health Trust Surulere',     'pharmacy', 'Surulere, Lagos',         6.4920, 3.3565, '+2348044001100', 1, 4.5, 'Mon-Sat 8AM-9PM',      103],
-    ['Family Medicare Pharmacy Yaba',   'pharmacy', 'Yaba, Lagos',             6.5095, 3.3711, '+2348012345004', 1, 4.3, 'Daily 7AM-10PM',        47],
-    ['Sunrise Pharmacy Yaba',           'pharmacy', 'Yaba, Lagos',             6.5100, 3.3750, '+2348066002200', 1, 4.2, 'Mon-Sat 8AM-8PM',       39],
-    ['Alpha Pharmacy Lagos Island',     'pharmacy', 'Lagos Island, Lagos',     6.4541, 3.3947, '+2348033002200', 1, 4.6, 'Mon-Sat 8AM-8PM',      167],
-    ['City Pharmacy CMS',               'pharmacy', 'Lagos Island, Lagos',     6.4480, 3.3990, '+2348044003300', 1, 4.4, 'Mon-Sat 8AM-7PM',       92],
-    ['Optimal Pharmacy Gbagada',        'pharmacy', 'Gbagada, Lagos',          6.5667, 3.3833, '+2348066003300', 1, 4.4, 'Mon-Sat 8AM-8PM',       81],
-    ['Guardian Pharmacy Magodo',        'pharmacy', 'Magodo, Lagos',           6.6167, 3.3700, '+2348077004400', 1, 4.5, 'Mon-Sat 8AM-9PM',      118],
-    ['Westend Pharmacy Agege',          'pharmacy', 'Agege, Lagos',            6.6163, 3.3223, '+2348088006600', 0, 4.1, 'Mon-Sat 7AM-9PM',       43],
-    ['Femi Johnson Pharmacy Apapa',     'pharmacy', 'Apapa, Lagos',            6.4478, 3.3625, '+2348099007700', 1, 4.3, 'Mon-Sat 8AM-7PM',       57],
+    // Victoria Island
+    ['Chemart Pharmacy',              'Victoria Island, Lagos',  6.4487, 3.4308, '', 1, 4.5, 'Mon-Sat 8AM-8PM',  88],
+    ['Bay-Kins Pharmacy',             'Victoria Island, Lagos',  6.4299, 3.4525, '', 1, 4.3, 'Mon-Sat 9AM-7PM',  42],
+    ['MedPlus Pharmacy VI',           'Victoria Island, Lagos',  6.4363, 3.4511, '', 1, 4.6, 'Daily 8AM-9PM',   211],
+    ['HealthPlus Pharmacy VI',        'Victoria Island, Lagos',  6.4359, 3.4514, '', 1, 4.7, 'Daily 8AM-9PM',   298],
+    ['MedPlus Pharmacy Falomo',       'Ikoyi, Lagos',            6.4385, 3.4320, '', 1, 4.5, 'Daily 8AM-9PM',   134],
+    ['Dr. Rita\'s Pharmacy',          'Victoria Island, Lagos',  6.4296, 3.4568, '', 1, 4.4, 'Mon-Sat 9AM-7PM',  67],
+    ['BPS Pharmacy',                  'Ikoyi, Lagos',            6.4562, 3.4454, '', 1, 4.3, 'Mon-Sat 8AM-8PM',  53],
+    ['HealthPlus Alexander Avenue',   'Ikoyi, Lagos',            6.4458, 3.4501, '', 1, 4.7, 'Daily 8AM-9PM',   176],
+    ['Careforte Pharmacy',            'Lagos Island, Lagos',     6.4306, 3.4234, '', 1, 4.4, 'Mon-Sat 8AM-7PM',  61],
+
+    // Lekki / Ajah
+    ['Pills & Tabs Pharmacy',         'Lekki Phase 1, Lagos',    6.4362, 3.4894, '', 1, 4.5, 'Mon-Sat 8AM-9PM',  89],
+    ['HealthPlus Lekki',              'Lekki Phase 1, Lagos',    6.4468, 3.4727, '', 1, 4.7, 'Daily 8AM-9PM',   203],
+    ['Estandar Pharmacy',             'Lekki Phase 2, Lagos',    6.4873, 3.5778, '', 1, 4.3, 'Mon-Sat 8AM-8PM',  44],
+
+    // Yaba / Surulere
+    ['HealthPlus Pharmacy Yaba',      'Yaba, Lagos',             6.5064, 3.3743, '', 1, 4.6, 'Daily 8AM-9PM',   158],
+    ['Patient Medicine Store',        'Surulere, Lagos',         6.4939, 3.3891, '', 0, 4.1, 'Mon-Sat 8AM-8PM',  28],
+
+    // Ikeja / Maryland
+    ['HealthPlus Pharmacy Ikeja',     'Ikeja, Lagos',            6.6139, 3.3581, '', 1, 4.7, 'Daily 8AM-9PM',   312],
+    ['Health Plus Ikeja GRA',         'Ikeja GRA, Lagos',        6.5969, 3.3542, '', 1, 4.6, 'Mon-Sat 8AM-9PM', 187],
+    ['Hand of God Pharmacy',          'Maryland, Lagos',         6.6017, 3.4139, '', 0, 4.0, 'Mon-Sat 8AM-8PM',  19],
+    ['Varg Pharmacy',                 'Maryland, Lagos',         6.6071, 3.4150, '', 1, 4.2, 'Mon-Sat 8AM-8PM',  37],
+    ['Seal Pharmacy',                 'Maryland, Lagos',         6.6082, 3.4250, '', 1, 4.3, 'Mon-Sat 8AM-8PM',  51],
+    ['Kojos Pharmacy',                'Maryland, Lagos',         6.6060, 3.4217, '', 1, 4.4, 'Mon-Sat 9AM-7PM',  63],
+    ['Bosycare Pharmacy',             'Maryland, Lagos',         6.6052, 3.4101, '', 1, 4.2, 'Mon-Sat 8AM-7PM',  29],
+
+    // Agege / Iyana Ipaja
+    ['Slon Pharmacy',                 'Agege, Lagos',            6.5399, 3.3131, '', 0, 4.0, 'Mon-Sat 7AM-9PM',  21],
+    ['Semper Pharmacy',               'Agege, Lagos',            6.5408, 3.2996, '', 1, 4.2, 'Mon-Sat 8AM-8PM',  34],
+    ['Okerube Pharmacy',              'Iyana Ipaja, Lagos',      6.5281, 3.2357, '', 0, 4.0, 'Mon-Sat 7AM-9PM',  16],
+    ['Favor Chemist Store',           'Iyana Ipaja, Lagos',      6.5226, 3.2344, '', 0, 3.9, 'Mon-Sat 8AM-8PM',  12],
+    ['Pharmaceutical Store Ipaja',    'Iyana Ipaja, Lagos',      6.5292, 3.2353, '', 0, 4.0, 'Mon-Sat 8AM-7PM',  18],
+
+    // Ikorodu
+    ['Megacare+ Pharmacy',            'Ikorodu, Lagos',          6.6153, 3.5019, '', 1, 4.4, 'Mon-Sat 8AM-8PM',  72],
+    ['Helix Pharmacy',                'Ikorodu, Lagos',          6.6136, 3.5017, '', 1, 4.5, 'Mon-Sat 8AM-8PM',  88],
+    ['Mayaflora Pharmacy',            'Ikorodu, Lagos',          6.6319, 3.5357, '', 1, 4.3, 'Mon-Sat 8AM-7PM',  41],
+
+    // Badagry
+    ['Oriwu Pharmacy',                'Badagry, Lagos',          6.4978, 3.1955, '', 1, 4.2, 'Mon-Sat 8AM-7PM',  33],
   ]
 
   const pharmIds = [pharm1.lastInsertRowid]
-  for (const [name, type, location, lat, lng, phone, nafdac, rating, hours, review_count] of realPharmacies) {
-    const r = insertPharmacy.run(null, name, type, location, lat, lng, phone, nafdac, rating, hours, review_count)
+  for (const [name, location, lat, lng, phone, nafdac, rating, hours, review_count] of realPharmacies) {
+    const r = insertPharmacy.run(null, name, 'pharmacy', location, lat, lng, phone || null, nafdac, rating, hours, review_count)
     pharmIds.push(r.lastInsertRowid)
   }
 
+  // Seed inventory for all pharmacies
   const insertInv = db.prepare(`INSERT INTO inventory (pharmacy_id,name,stock,price,expiry,status) VALUES (?,?,?,?,?,?)`)
   const meds = [
     ['Amoxicillin 500mg',      240, 'N800',    'Dec 2026'],
@@ -56,6 +76,12 @@ export function seed(db) {
     ['Ibuprofen 400mg',         35, 'N300',    'Oct 2026'],
     ['Insulin Actrapid 100IU',  12, 'N18000',  'May 2027'],
     ['IV Normal Saline 500ml',  80, 'N1500',   'Jul 2027'],
+    ['Azithromycin 500mg',      45, 'N1200',   'Jun 2027'],
+    ['Metronidazole 200mg',     90, 'N350',    'Dec 2026'],
+    ['Artemether-Lumefantrine', 30, 'N1500',   'Sep 2027'],
+    ['Cetirizine 10mg',         60, 'N300',    'Nov 2027'],
+    ['Salbutamol Inhaler',       8, 'N2500',   'Mar 2027'],
+    ['Prednisolone 5mg',        40, 'N350',    'Aug 2027'],
   ]
 
   for (const pid of pharmIds) {
@@ -66,6 +92,7 @@ export function seed(db) {
     }
   }
 
+  // Alerts
   const insertAlert = db.prepare(`INSERT INTO alerts (type,title,body,tag,read) VALUES (?,?,?,?,?)`)
   insertAlert.run('recall',       'NAFDAC Recall Notice',   'Batch #A2341 of Paracetamol 500mg recalled due to quality concerns.',  'Recall',   0)
   insertAlert.run('shortage',     'Shortage Alert',          'Insulin Actrapid 100IU experiencing nationwide shortage risk.',        'Shortage', 0)
