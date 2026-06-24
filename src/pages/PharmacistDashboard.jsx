@@ -32,26 +32,27 @@ export function PharmacistDashboard({ setPage }) {
 
   return (
     <div className="max-w-[1200px] mx-auto px-6 py-8">
-      <div className="grain-overlay bg-grad-green rounded-[20px] px-8 py-7 mb-6 text-white">
-        <div className="flex justify-between items-center flex-wrap gap-4">
-          <div>
-            <p className="text-white/75 text-[13px] flex items-center gap-1.5">
-              <LocalPharmacyIcon sx={{ fontSize: 14 }}/> Pharmacist · Verified Partner
-              <CheckCircle2 size={13} className="text-[#86EFAC]"/>
-            </p>
-            <h1 className="font-display text-[28px] font-black my-1">{user?.org_name || user?.name}</h1>
-            <p className="text-white/80 text-sm flex items-center gap-1"><MapPin size={13}/> {user?.location || "Location not set"}{user?.license_number ? ` · ${user.license_number}` : ""}</p>
-          </div>
-          <div className="flex gap-2.5 flex-wrap">
-            <Btn size="sm" style={{ background:'rgba(255,255,255,0.2)', border:'1px solid rgba(255,255,255,0.4)', color:'#fff' }} onClick={() => setPage("inventory")}>Manage Inventory</Btn>
-            <Btn size="sm" style={{ background:'rgba(255,255,255,0.2)', border:'1px solid rgba(255,255,255,0.4)', color:'#fff' }} onClick={() => setPage("inventory")}>Update Stock</Btn>
-            {invStats.pharmacy_id && (
-              <Btn size="sm" style={{ background:'rgba(255,255,255,0.2)', border:'1px solid rgba(255,255,255,0.4)', color:'#fff' }}
-                onClick={() => navigate(`/pharmacy/${invStats.pharmacy_id}`)}>
-                <ExternalLink size={13}/> View My Listing
-              </Btn>
-            )}
-          </div>
+      {/* Page header */}
+      <div className="flex justify-between items-start flex-wrap gap-4 mb-6">
+        <div>
+          <p className="text-muted text-[13px] flex items-center gap-1.5 mb-1">
+            <LocalPharmacyIcon sx={{ fontSize: 14 }}/> Verified Partner
+            <CheckCircle2 size={13} className="text-green-brand"/>
+          </p>
+          <h1 className="font-display text-[26px] font-black tracking-tight">{user?.org_name || user?.name}</h1>
+          <p className="text-muted text-sm flex items-center gap-1 mt-0.5">
+            <MapPin size={13}/> {user?.location || 'Location not set'}
+            {user?.license_number ? ` · PCN ${user.license_number}` : ''}
+          </p>
+        </div>
+        <div className="flex gap-2.5 flex-wrap">
+          <Btn size="sm" variant="secondary" onClick={() => setPage('inventory')}>Manage Inventory</Btn>
+          <Btn size="sm" variant="secondary" onClick={() => setPage('inventory')}>Update Stock</Btn>
+          {invStats.pharmacy_id && (
+            <Btn size="sm" onClick={() => navigate(`/pharmacy/${invStats.pharmacy_id}`)}>
+              <ExternalLink size={13}/> View Listing
+            </Btn>
+          )}
         </div>
       </div>
 

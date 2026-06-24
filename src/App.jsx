@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-
 import { gsap } from 'gsap'
 import { useAuth } from '@/lib/auth.jsx'
 import { Nav } from '@/components/Nav'
+import { PharmacistLayout } from '@/components/PharmacistLayout'
 import { Landing } from '@/pages/Landing'
 import { ChooseRole } from '@/pages/ChooseRole'
 import { AuthScreen } from '@/pages/AuthScreen'
@@ -53,50 +54,60 @@ function App() {
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted text-sm">Loading...</div>
 
   const userType = user?.role
+  const isPharmacist = !loading && user && userType === 'pharmacist'
+
+  const routes = (
+    <Routes>
+      {/* Public */}
+      <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Landing />} />
+      <Route path="/choose" element={user ? <Navigate to="/dashboard" replace /> : <ChooseRole />} />
+      <Route path="/auth" element={user ? <Navigate to="/dashboard" replace /> : <AuthScreen />} />
+      <Route path="/verify-email" element={<EmailVerificationPage />} />
+
+      {/* Role dashboards */}
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          {userType === "patient" && <PatientHome setPage={p => navigate(`/${p}`)} />}
+          {userType === "pharmacist" && <PharmacistDashboard setPage={p => navigate(`/${p}`)} />}
+        </ProtectedRoute>
+      } />
+
+      {/* Patient routes */}
+      <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+      <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
+      <Route path="/pharmacy/:id" element={<ProtectedRoute><PharmacyDetail /></ProtectedRoute>} />
+
+      {/* Pharmacist routes */}
+      <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
+      <Route path="/insights" element={<ProtectedRoute><InsightsPage userType={userType} /></ProtectedRoute>} />
+      <Route path="/analytics" element={<ProtectedRoute><InsightsPage userType={userType} /></ProtectedRoute>} />
+
+      {/* Shared */}
+      <Route path="/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><ProfilePage userType={userType} onSwitchRole={signOut} onSignOut={signOut} /></ProtectedRoute>} />
+
+      {/* Public info pages */}
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
+
+  if (isPharmacist) {
+    return (
+      <PharmacistLayout onSignOut={signOut}>
+        <div ref={pageContentRef}>{routes}</div>
+      </PharmacistLayout>
+    )
+  }
 
   return (
     <div>
       {user && <Nav userType={userType} onSignOut={signOut} />}
-      <div ref={pageContentRef}>
-        <Routes>
-          {/* Public */}
-          <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Landing />} />
-          <Route path="/choose" element={user ? <Navigate to="/dashboard" replace /> : <ChooseRole />} />
-          <Route path="/auth" element={user ? <Navigate to="/dashboard" replace /> : <AuthScreen />} />
-          {/* Email verification — user logged in but not yet verified */}
-          <Route path="/verify-email" element={<EmailVerificationPage />} />
-
-          {/* Role dashboards — patient & pharmacist only */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              {userType === "patient" && <PatientHome setPage={p => navigate(`/${p}`)} />}
-              {userType === "pharmacist" && <PharmacistDashboard setPage={p => navigate(`/${p}`)} />}
-            </ProtectedRoute>
-          } />
-
-          {/* Patient routes */}
-          <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
-          <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
-          <Route path="/pharmacy/:id" element={<ProtectedRoute><PharmacyDetail /></ProtectedRoute>} />
-
-          {/* Pharmacist routes */}
-          <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
-          <Route path="/insights" element={<ProtectedRoute><InsightsPage userType={userType} /></ProtectedRoute>} />
-          <Route path="/analytics" element={<ProtectedRoute><InsightsPage userType={userType} /></ProtectedRoute>} />
-
-          {/* Shared */}
-          <Route path="/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><ProfilePage userType={userType} onSwitchRole={signOut} onSignOut={signOut} /></ProtectedRoute>} />
-
-          {/* Public info pages */}
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
+      <div ref={pageContentRef}>{routes}</div>
     </div>
   )
 }
