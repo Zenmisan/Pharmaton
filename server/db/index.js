@@ -21,6 +21,7 @@ db.exec(schema)
 const migrations = [
   'ALTER TABLE pharmacies ADD COLUMN hours TEXT',
   'ALTER TABLE pharmacies ADD COLUMN review_count INTEGER NOT NULL DEFAULT 0',
+  "ALTER TABLE inventory ADD COLUMN category TEXT NOT NULL DEFAULT 'Medicine'",
 ]
 for (const sql of migrations) {
   try { db.exec(sql) } catch { /* column already exists */ }

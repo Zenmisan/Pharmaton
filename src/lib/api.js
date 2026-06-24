@@ -52,4 +52,7 @@ export const api = {
   pharmacy: (id) => apiFetch(`/pharmacies/${id}`),
 
   ai: (system, user) => apiFetch('/ai', { method: 'POST', body: { system, user } }),
+
+  prescriptionScan: (payload) => apiFetch('/prescription/scan', { method: 'POST', body: payload }),
+  prescriptionSearch: (drugs, lat, lng) => apiFetch('/prescription/search', { method: 'POST', body: { drugs, lat, lng } }),
 }

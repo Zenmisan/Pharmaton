@@ -18,7 +18,7 @@ export function Nav({ userType, onSignOut }) {
   }, [])
 
   const links = userType === "patient"
-    ? [["/dashboard","Home"],["/search","Search Medicine"],["/map","Find Pharmacies"],["/alerts","Safety Alerts"]]
+    ? [["/dashboard","Home"],["/search","Search Medicine"],["/prescription","Prescription"],["/map","Find Pharmacies"],["/alerts","Safety Alerts"]]
     : [["/dashboard","Dashboard"],["/inventory","Inventory"],["/insights","Insights"]]
 
   return (

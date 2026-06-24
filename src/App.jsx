@@ -17,6 +17,7 @@ import { PharmacyDetail } from '@/pages/PharmacyDetail'
 import { PharmacistDashboard } from '@/pages/PharmacistDashboard'
 import { InventoryPage } from '@/pages/InventoryPage'
 import { InsightsPage } from '@/pages/InsightsPage'
+import { PrescriptionPage } from '@/pages/PrescriptionPage'
 import { AboutPage } from '@/pages/AboutPage'
 import { ContactPage } from '@/pages/ContactPage'
 import { PricingPage } from '@/pages/PricingPage'
@@ -75,6 +76,7 @@ function App() {
       {/* Patient routes */}
       <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
       <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
+      <Route path="/prescription" element={<ProtectedRoute><PrescriptionPage /></ProtectedRoute>} />
       <Route path="/pharmacy/:id" element={<ProtectedRoute><PharmacyDetail /></ProtectedRoute>} />
 
       {/* Pharmacist routes */}

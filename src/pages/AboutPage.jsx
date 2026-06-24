@@ -2,53 +2,49 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, MapPin, Heart, Shield, Zap } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 
-function Avatar({ initials, color }) {
-  return (
-    <div
-      className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-black"
-      style={{ background: color }}
-    >
-      {initials}
-    </div>
-  )
-}
-
 const team = [
   {
-    initials: 'AO',
+    name: 'Oboerhiri Ogheneochuko Emmanuella',
+    role: 'Pharmacy & Clinical Lead',
+    bio: 'Future Pharmacist 💊 · Healthcare innovator · Passionate about improving medicine accessibility and patient care.',
     color: '#1B3FC4',
-    name: 'Akin Ireyemi',
-    role: 'Founder & Product Lead',
-    bio: 'Passionate about using technology to solve real healthcare access challenges across Nigeria. Building PharmaConnect to bridge the gap between patients and pharmacies.',
+    initials: 'OE',
   },
   {
-    initials: 'FA',
-    color: '#16A34A',
-    name: 'Team Member',
-    role: 'Pharmacy & Clinical Advisor',
-    bio: 'Registered pharmacist with over 8 years experience in retail and hospital pharmacy across Lagos. Ensures PharmaConnect meets real clinical and dispensing standards.',
+    name: 'Amusa Zainab Atinuke',
+    role: 'Healthcare Advocate',
+    bio: 'Future Pharmacist · Healthcare advocate · Building bridges between patients and pharmacy care across Nigeria.',
+    color: '#15803D',
+    initials: 'ZA',
   },
   {
-    initials: 'EO',
+    name: 'Babaniyi Daniel Oluwatosin',
+    role: 'Healthcare Advocate',
+    bio: 'Future pharmacist · Healthcare advocate · Committed to reimagining how patients access safe and affordable medicine.',
     color: '#0D9488',
-    name: 'Team Member',
-    role: 'Engineering',
-    bio: 'Full-stack engineer focused on building reliable, fast systems. Leads backend architecture and ensures the platform scales to serve pharmacies across Nigeria.',
+    initials: 'BD',
   },
   {
-    initials: 'TN',
+    name: 'Adigun Khadijah',
+    role: 'Product & Strategy',
+    bio: 'Sabi girl · Brings sharp product thinking and user insight to everything PharmaConnect does.',
     color: '#7C3AED',
-    name: 'Team Member',
-    role: 'Growth & Partnerships',
-    bio: 'Works with pharmacy networks and healthcare providers to onboard verified partners. Building the supply side of the PharmaConnect network.',
+    initials: 'AK',
+  },
+  {
+    name: 'Adedunye Imisioluwa Praise',
+    role: 'Web Developer',
+    bio: 'Builds the platform that powers it all — from search to pharmacy dashboards — with speed, care, and craft.',
+    color: '#C2410C',
+    initials: 'AP',
   },
 ]
 
 const values = [
-  { Icon: Heart,   title: 'Patient First',   desc: 'Every decision starts with what makes it easier for patients to access safe, affordable medicine.' },
-  { Icon: Shield,  title: 'Verified Only',   desc: 'Only PCN-licensed, NAFDAC-compliant pharmacies appear on our platform. No shortcuts on safety.' },
-  { Icon: Zap,     title: 'Speed & Access',  desc: 'Seconds matter in healthcare. We build for speed so patients find what they need before making the journey.' },
-  { Icon: MapPin,  title: 'Local First',     desc: 'Built specifically for Lagos and Nigeria — local pricing, local languages, local pharmacy networks.' },
+  { Icon: Heart,  title: 'Patient First',  desc: 'Every decision starts with what makes it easier for patients to access safe, affordable medicine.' },
+  { Icon: Shield, title: 'Verified Only',  desc: 'Only PCN-licensed, NAFDAC-compliant pharmacies appear on our platform. No shortcuts on safety.' },
+  { Icon: Zap,    title: 'Speed & Access', desc: 'Seconds matter in healthcare. We build for speed so patients find what they need before making the journey.' },
+  { Icon: MapPin, title: 'Local First',    desc: 'Built specifically for Lagos and Nigeria — local pricing, local languages, local pharmacy networks.' },
 ]
 
 export function AboutPage() {
@@ -77,7 +73,7 @@ export function AboutPage() {
             Medicine Access,<br />Built for Nigeria
           </h1>
           <p className="text-white/80 text-[clamp(15px,2vw,18px)] leading-[1.7]">
-            PharmaConnect is a platform connecting patients with verified pharmacies across Lagos —
+            PharmaConnect connects patients with verified pharmacies across Lagos —
             making it easy to check stock, compare prices, and get directions before you leave home.
           </p>
         </div>
@@ -123,13 +119,29 @@ export function AboutPage() {
       {/* Team */}
       <div className="max-w-[900px] mx-auto px-6 py-16">
         <h2 className="text-[26px] font-black mb-2 tracking-tight text-center">The Team</h2>
-        <p className="text-center text-muted mb-12">Built by people who understand the problem firsthand</p>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <p className="text-center text-muted mb-10">Built by people who understand the problem firsthand</p>
+
+        {/* Group photo */}
+        <div className="rounded-3xl overflow-hidden mb-12 shadow-[0_8px_40px_rgba(20,19,15,0.12)] max-w-[520px] mx-auto">
+          <img src="/team.jpg" alt="PharmaConnect team" className="w-full h-auto object-cover" />
+        </div>
+
+        {/* Individual cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {team.map(m => (
-            <div key={m.name} className="text-center">
-              <Avatar initials={m.initials} color={m.color} />
-              <h3 className="font-extrabold text-[15px] mb-0.5 tracking-tight">{m.name}</h3>
-              <p className="text-blue-brand text-[12px] font-bold mb-3">{m.role}</p>
+            <div key={m.name} className="bg-white rounded-2xl border border-border p-5 flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <div
+                  className="size-10 rounded-full flex items-center justify-center text-white text-[13px] font-black shrink-0"
+                  style={{ background: m.color }}
+                >
+                  {m.initials}
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-extrabold text-[13px] leading-tight tracking-tight">{m.name}</h3>
+                  <p className="text-[11px] font-bold mt-0.5" style={{ color: m.color }}>{m.role}</p>
+                </div>
+              </div>
               <p className="text-muted text-[12px] leading-relaxed">{m.bio}</p>
             </div>
           ))}

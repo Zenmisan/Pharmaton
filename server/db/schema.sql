@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS inventory (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   pharmacy_id INTEGER NOT NULL REFERENCES pharmacies(id),
   name TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'Medicine',
   stock INTEGER NOT NULL DEFAULT 0,
   price TEXT,
   expiry TEXT,
