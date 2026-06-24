@@ -12,6 +12,7 @@ import pharmaciesRoutes from './routes/pharmacies.js'
 import searchRoutes from './routes/search.js'
 import aiRoutes from './routes/ai.js'
 import prescriptionRoutes from './routes/prescription.js'
+import adminRoutes from './routes/admin.js'
 
 const app = express()
 app.use(cors())
@@ -32,6 +33,7 @@ app.use('/api/pharmacies', requireAuth, pharmaciesRoutes)
 app.use('/api/search', requireAuth, searchRoutes)
 app.use('/api/ai', requireAuth, aiRoutes)
 app.use('/api/prescription', requireAuth, prescriptionRoutes)
+app.use('/api/admin', adminRoutes)
 
 app.get('/api/health', (req, res) => res.json({ ok: true }))
 

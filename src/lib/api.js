@@ -56,3 +56,24 @@ export const api = {
   prescriptionScan: (payload) => apiFetch('/prescription/scan', { method: 'POST', body: payload }),
   prescriptionSearch: (drugs, lat, lng) => apiFetch('/prescription/search', { method: 'POST', body: { drugs, lat, lng } }),
 }
+
+export async function adminFetch(path, secret, { method = 'GET', body } = {}) {
+  const res = await fetch(`${BASE}${path}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-key': secret,
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`)
+  return data
+}
+
+export const adminApi = {
+  list:   (secret, status) => adminFetch(`/admin/pharmacists${status ? `?status=${status}` : ''}`, secret),
+  verify: (secret, id, notes) => adminFetch(`/admin/pharmacists/${id}/verify`, secret, { method: 'POST', body: { notes } }),
+  reject: (secret, id, notes) => adminFetch(`/admin/pharmacists/${id}/reject`, secret, { method: 'POST', body: { notes } }),
+  reset:  (secret, id) => adminFetch(`/admin/pharmacists/${id}/reset`, secret, { method: 'POST' }),
+}

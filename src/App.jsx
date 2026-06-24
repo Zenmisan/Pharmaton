@@ -18,6 +18,7 @@ import { PharmacistDashboard } from '@/pages/PharmacistDashboard'
 import { InventoryPage } from '@/pages/InventoryPage'
 import { InsightsPage } from '@/pages/InsightsPage'
 import { PrescriptionPage } from '@/pages/PrescriptionPage'
+import { AdminPage } from '@/pages/AdminPage'
 import { AboutPage } from '@/pages/AboutPage'
 import { ContactPage } from '@/pages/ContactPage'
 import { PricingPage } from '@/pages/PricingPage'
@@ -90,6 +91,7 @@ function App() {
 
       {/* Public info pages */}
       <Route path="/about" element={<AboutPage />} />
+      <Route path="/admin" element={<AdminPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/pricing" element={<PricingPage />} />
 

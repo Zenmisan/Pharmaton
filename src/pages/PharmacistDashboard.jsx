@@ -35,15 +35,35 @@ export function PharmacistDashboard({ setPage }) {
       {/* Page header */}
       <div className="flex justify-between items-start flex-wrap gap-4 mb-6">
         <div>
-          <p className="text-muted text-[13px] flex items-center gap-1.5 mb-1">
-            <LocalPharmacyIcon sx={{ fontSize: 14 }}/> Verified Partner
-            <CheckCircle2 size={13} className="text-green-brand"/>
-          </p>
+          {user?.pcn_status === 'verified' ? (
+            <p className="text-muted text-[13px] flex items-center gap-1.5 mb-1">
+              <LocalPharmacyIcon sx={{ fontSize: 14 }}/> PCN Verified
+              <CheckCircle2 size={13} className="text-green-brand"/>
+            </p>
+          ) : user?.pcn_status === 'rejected' ? (
+            <p className="text-[13px] flex items-center gap-1.5 mb-1 text-danger">
+              <AlertTriangle size={13}/> PCN Verification Failed
+            </p>
+          ) : (
+            <p className="text-[13px] flex items-center gap-1.5 mb-1 text-amber-600">
+              <AlertTriangle size={13}/> PCN Verification Pending
+            </p>
+          )}
           <h1 className="font-display text-[26px] font-black tracking-tight">{user?.org_name || user?.name}</h1>
           <p className="text-muted text-sm flex items-center gap-1 mt-0.5">
             <MapPin size={13}/> {user?.location || 'Location not set'}
             {user?.license_number ? ` · PCN ${user.license_number}` : ''}
           </p>
+          {user?.pcn_status === 'rejected' && user?.pcn_notes && (
+            <p className="text-[12px] text-danger mt-1 bg-red-50 px-3 py-1.5 rounded-lg">
+              {user.pcn_notes}
+            </p>
+          )}
+          {user?.pcn_status === 'pending' && (
+            <p className="text-[12px] text-amber-700 mt-1 bg-amber-50 px-3 py-1.5 rounded-lg">
+              Your PCN license is being reviewed. This usually takes 1–2 business days.
+            </p>
+          )}
         </div>
         <div className="flex gap-2.5 flex-wrap">
           <Btn size="sm" variant="secondary" onClick={() => setPage('inventory')}>Manage Inventory</Btn>

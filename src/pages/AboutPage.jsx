@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, MapPin, Heart, Shield, Zap } from 'lucide-react'
 import { Logo } from '@/components/Logo'
@@ -9,6 +10,7 @@ const team = [
     bio: 'Future Pharmacist 💊 · Healthcare innovator · Passionate about improving medicine accessibility and patient care.',
     color: '#1B3FC4',
     initials: 'OE',
+    photo: '/team-emmanuella.jpg',
   },
   {
     name: 'Amusa Zainab Atinuke',
@@ -16,6 +18,7 @@ const team = [
     bio: 'Future Pharmacist · Healthcare advocate · Building bridges between patients and pharmacy care across Nigeria.',
     color: '#15803D',
     initials: 'ZA',
+    photo: '/team-zainab.jpg',
   },
   {
     name: 'Babaniyi Daniel Oluwatosin',
@@ -23,6 +26,7 @@ const team = [
     bio: 'Future pharmacist · Healthcare advocate · Committed to reimagining how patients access safe and affordable medicine.',
     color: '#0D9488',
     initials: 'BD',
+    photo: '/team-daniel.jpg',
   },
   {
     name: 'Adigun Khadijah',
@@ -30,6 +34,7 @@ const team = [
     bio: 'Sabi girl · Brings sharp product thinking and user insight to everything PharmaConnect does.',
     color: '#7C3AED',
     initials: 'AK',
+    photo: null,
   },
   {
     name: 'Adedunye Imisioluwa Praise',
@@ -37,6 +42,7 @@ const team = [
     bio: 'Builds the platform that powers it all — from search to pharmacy dashboards — with speed, care, and craft.',
     color: '#C2410C',
     initials: 'AP',
+    photo: '/team-praise.jpg',
   },
 ]
 
@@ -46,6 +52,28 @@ const values = [
   { Icon: Zap,    title: 'Speed & Access', desc: 'Seconds matter in healthcare. We build for speed so patients find what they need before making the journey.' },
   { Icon: MapPin, title: 'Local First',    desc: 'Built specifically for Lagos and Nigeria — local pricing, local languages, local pharmacy networks.' },
 ]
+
+function TeamAvatar({ member }) {
+  const [imgError, setImgError] = useState(false)
+  if (member.photo && !imgError) {
+    return (
+      <img
+        src={member.photo}
+        alt={member.name}
+        onError={() => setImgError(true)}
+        className="w-[88px] h-[88px] rounded-full object-cover object-top border-[3px] border-white shadow-md mx-auto mb-3"
+      />
+    )
+  }
+  return (
+    <div
+      className="w-[88px] h-[88px] rounded-full flex items-center justify-center text-white text-2xl font-black mx-auto mb-3 border-[3px] border-white shadow-md"
+      style={{ background: member.color }}
+    >
+      {member.initials}
+    </div>
+  )
+}
 
 export function AboutPage() {
   const navigate = useNavigate()
@@ -116,35 +144,31 @@ export function AboutPage() {
         </div>
       </div>
 
-      {/* Team */}
-      <div className="max-w-[900px] mx-auto px-6 py-16">
-        <h2 className="text-[26px] font-black mb-2 tracking-tight text-center">The Team</h2>
-        <p className="text-center text-muted mb-10">Built by people who understand the problem firsthand</p>
+      {/* Team — blurred group photo bg + individual cards */}
+      <div className="relative py-20 overflow-hidden">
+        {/* Blurred background */}
+        <img
+          src="/team-bg.jpg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover object-center scale-105"
+          style={{ filter: 'blur(6px)', opacity: 0.22 }}
+        />
+        <div className="absolute inset-0 bg-background/60" />
 
-        {/* Group photo */}
-        <div className="rounded-3xl overflow-hidden mb-12 shadow-[0_8px_40px_rgba(20,19,15,0.12)] max-w-[520px] mx-auto">
-          <img src="/team.jpg" alt="PharmaConnect team" className="w-full h-auto object-cover" />
-        </div>
+        <div className="relative z-10 max-w-[960px] mx-auto px-6">
+          <h2 className="text-[26px] font-black mb-2 tracking-tight text-center">The Team</h2>
+          <p className="text-center text-muted mb-12">Built by people who understand the problem firsthand</p>
 
-        {/* Individual cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {team.map(m => (
-            <div key={m.name} className="bg-white rounded-2xl border border-border p-5 flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <div
-                  className="size-10 rounded-full flex items-center justify-center text-white text-[13px] font-black shrink-0"
-                  style={{ background: m.color }}
-                >
-                  {m.initials}
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-extrabold text-[13px] leading-tight tracking-tight">{m.name}</h3>
-                  <p className="text-[11px] font-bold mt-0.5" style={{ color: m.color }}>{m.role}</p>
-                </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {team.map(m => (
+              <div key={m.name} className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-sm p-6 text-center flex flex-col items-center">
+                <TeamAvatar member={m} />
+                <h3 className="font-extrabold text-[14px] leading-snug tracking-tight mb-0.5">{m.name}</h3>
+                <p className="text-[11px] font-bold mb-3" style={{ color: m.color }}>{m.role}</p>
+                <p className="text-muted text-[12px] leading-relaxed">{m.bio}</p>
               </div>
-              <p className="text-muted text-[12px] leading-relaxed">{m.bio}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 

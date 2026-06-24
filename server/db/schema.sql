@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
   org_name TEXT,
   location TEXT,
   license_number TEXT,
+  pcn_status TEXT NOT NULL DEFAULT 'pending' CHECK(pcn_status IN ('pending','verified','rejected')),
+  pcn_notes TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

@@ -22,6 +22,8 @@ const migrations = [
   'ALTER TABLE pharmacies ADD COLUMN hours TEXT',
   'ALTER TABLE pharmacies ADD COLUMN review_count INTEGER NOT NULL DEFAULT 0',
   "ALTER TABLE inventory ADD COLUMN category TEXT NOT NULL DEFAULT 'Medicine'",
+  "ALTER TABLE users ADD COLUMN pcn_status TEXT NOT NULL DEFAULT 'pending'",
+  "ALTER TABLE users ADD COLUMN pcn_notes TEXT",
 ]
 for (const sql of migrations) {
   try { db.exec(sql) } catch { /* column already exists */ }
